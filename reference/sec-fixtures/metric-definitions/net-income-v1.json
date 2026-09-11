@@ -1,0 +1,11 @@
+{
+  "id": "1c04e731-a5f5-598f-9d99-95c9e806fe5c",
+  "code": "NET_INCOME",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "INCOME_STATEMENT",
+  "statement_placement": "NET_INCOME",
+  "meaning": "Consolidated net income or loss attributable to the reporting entity for the stated issuer period.",
+  "expected_period_kind": "DURATION",
+  "allowed_unit_kinds": ["MONETARY"]
+}

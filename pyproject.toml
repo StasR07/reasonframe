@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "reasonframe"
+version = "0.1.0rc1"
+description = "Reasonframe local-first financial research backend"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "edgartools==5.53.0",
+    "fastapi>=0.116,<1",
+    "pydantic>=2.11,<3",
+    "openai-codex==0.147.0",
+    "python-dotenv>=1,<2",
+    "uvicorn>=0.35,<1",
+]
+
+[project.optional-dependencies]
+test = ["httpx>=0.28,<1", "pytest>=9.0.3,<10"]
+
+[project.scripts]
+validate-sec = "finance_terminal.sec.validate:main"
+reasonframe = "finance_terminal.refresh:main"
+certify-companies = "finance_terminal.certification:main"
+diagnose-phase7 = "finance_terminal.sec_diagnostics:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/finance_terminal"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+markers = [
+    "live: accesses live SEC data through EdgarTools (deselect with '-m not live')",
+    "live_macro: accesses live FRED data (deselect with '-m not live_macro')",
+    "live_codex: accesses the signed-in Codex provider (deselect with '-m not live_codex')",
+    "live_market: accesses live Tiingo EOD data (deselect with '-m not live_market')",
+]

@@ -1,0 +1,11 @@
+{
+  "id": "093def56-49dd-4681-9d06-a9abc44576b9",
+  "code": "CAPITAL_EXPENDITURE",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "CASH_FLOW_STATEMENT",
+  "statement_placement": "CAPITAL_EXPENDITURE",
+  "meaning": "Cash paid to acquire property, plant, and equipment for the stated issuer period, preserved as the source-reported positive outflow magnitude.",
+  "expected_period_kind": "DURATION",
+  "allowed_unit_kinds": ["MONETARY"]
+}

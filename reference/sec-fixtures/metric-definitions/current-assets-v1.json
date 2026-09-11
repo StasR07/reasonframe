@@ -1,0 +1,11 @@
+{
+  "id": "303e6e84-eb46-57c5-8cd6-4771078d6079",
+  "code": "CURRENT_ASSETS",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "BALANCE_SHEET",
+  "statement_placement": "CURRENT_ASSETS",
+  "meaning": "Consolidated assets classified as current by the reporting entity at the stated instant.",
+  "expected_period_kind": "INSTANT",
+  "allowed_unit_kinds": ["MONETARY"]
+}

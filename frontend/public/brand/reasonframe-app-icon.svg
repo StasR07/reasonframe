@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" fill="none">
+  <title>Reasonframe app icon</title>
+  <defs>
+    <linearGradient id="surface" x1="512" y1="64" x2="512" y2="960" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#252B37"/>
+      <stop offset="1" stop-color="#151922"/>
+    </linearGradient>
+    <filter id="shadow" x="170" y="170" width="684" height="700" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="22" stdDeviation="20" flood-color="#05070B" flood-opacity="0.38"/>
+    </filter>
+  </defs>
+  <rect x="64" y="64" width="896" height="896" rx="208" fill="url(#surface)"/>
+  <rect x="76" y="76" width="872" height="872" rx="196" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="4"/>
+  <g filter="url(#shadow)">
+    <rect x="246" y="378" width="400" height="400" rx="64" stroke="#F4F4F5" stroke-width="68"/>
+    <rect x="378" y="246" width="400" height="400" rx="64" stroke="#6EA8FF" stroke-width="68"/>
+    <path d="M646 566v132" stroke="#F4F4F5" stroke-width="68" stroke-linecap="round"/>
+  </g>
+</svg>

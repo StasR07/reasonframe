@@ -1,0 +1,11 @@
+{
+  "id": "c42c6ea8-f8f1-5999-81cc-0b36e45ca665",
+  "code": "REVENUE",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "INCOME_STATEMENT",
+  "statement_placement": "REVENUE",
+  "meaning": "Consolidated revenue recognized from ordinary activities for the stated issuer period.",
+  "expected_period_kind": "DURATION",
+  "allowed_unit_kinds": ["MONETARY"]
+}

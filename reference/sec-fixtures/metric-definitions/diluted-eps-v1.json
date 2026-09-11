@@ -1,0 +1,11 @@
+{
+  "id": "55bc17a7-bd65-55aa-93c1-b689da862797",
+  "code": "DILUTED_EPS",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "INCOME_STATEMENT",
+  "statement_placement": "DILUTED_EPS",
+  "meaning": "Diluted earnings or loss attributable to each common share for the stated issuer period.",
+  "expected_period_kind": "DURATION",
+  "allowed_unit_kinds": ["PER_SHARE"]
+}

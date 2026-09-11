@@ -1,0 +1,1964 @@
+{
+  "classification": "VERIFIED_REAL_WORLD",
+  "verified_real_world_data": true,
+  "fixture_version": "sec-five-company-reference-v3",
+  "verified_on": "2026-08-26",
+  "verification_role": "FINANCIAL_QA",
+  "evidence_basis": "CANONICAL_SEC_FILING",
+  "reference_fiscal_year": 2026,
+  "identity": {
+    "identifier_scheme": "CIK",
+    "identifier_value": "0001045810"
+  },
+  "facts": [
+    {
+      "metric_code": "BASIC_EPS",
+      "value": "4.93",
+      "unit_kind": "PER_SHARE",
+      "unit_code": "USD_PER_SHARE",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": "ANNUAL"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "EarningsPerShareBasic",
+          "source_value_text": "4.93",
+          "source_unit": "USD/shares",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "BASIC_EPS",
+      "value": "0.77",
+      "unit_kind": "PER_SHARE",
+      "unit_code": "USD_PER_SHARE",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2025-04-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q1",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000052",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "EarningsPerShareBasic",
+          "source_value_text": "0.77",
+          "source_unit": "USD/shares",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-04-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "BASIC_EPS",
+      "value": "1.08",
+      "unit_kind": "PER_SHARE",
+      "unit_code": "USD_PER_SHARE",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-04-28",
+        "end_date": "2025-07-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q2",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-25-000209",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "EarningsPerShareBasic",
+          "source_value_text": "1.08",
+          "source_unit": "USD/shares",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-04-28",
+          "source_end_date": "2025-07-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "BASIC_EPS",
+      "value": "1.31",
+      "unit_kind": "PER_SHARE",
+      "unit_code": "USD_PER_SHARE",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-07-28",
+        "end_date": "2025-10-26",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q3",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "EarningsPerShareBasic",
+          "source_value_text": "1.31",
+          "source_unit": "USD/shares",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-07-28",
+          "source_end_date": "2025-10-26"
+        }
+      ]
+    },
+    {
+      "metric_code": "CASH_AND_CASH_EQUIVALENTS",
+      "value": "10605000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "INSTANT",
+        "start_date": null,
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": null
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "CashAndCashEquivalentsAtCarryingValue",
+          "source_value_text": "10605000000",
+          "source_unit": "USD",
+          "source_period_kind": "INSTANT",
+          "source_start_date": null,
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "COST_OF_REVENUE",
+      "value": "62475000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": "ANNUAL"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "CostOfRevenue",
+          "source_value_text": "62475000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "COST_OF_REVENUE",
+      "value": "17394000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2025-04-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q1",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000052",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "CostOfRevenue",
+          "source_value_text": "17394000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-04-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "COST_OF_REVENUE",
+      "value": "12890000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-04-28",
+        "end_date": "2025-07-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q2",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-25-000209",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "CostOfRevenue",
+          "source_value_text": "12890000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-04-28",
+          "source_end_date": "2025-07-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "COST_OF_REVENUE",
+      "value": "15157000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-07-28",
+        "end_date": "2025-10-26",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q3",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "CostOfRevenue",
+          "source_value_text": "15157000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-07-28",
+          "source_end_date": "2025-10-26"
+        }
+      ]
+    },
+    {
+      "metric_code": "COST_OF_REVENUE",
+      "value": "17034000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "PERIOD_DERIVED",
+      "rule_version": "sec-q4-fy-minus-nine-month-ytd-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-10-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q4",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "FISCAL_YEAR",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "CostOfRevenue",
+          "source_value_text": "62475000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        },
+        {
+          "role": "NINE_MONTH_YTD",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "CostOfRevenue",
+          "source_value_text": "45441000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-10-26"
+        }
+      ]
+    },
+    {
+      "metric_code": "CURRENT_ASSETS",
+      "value": "125605000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "INSTANT",
+        "start_date": null,
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": null
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "AssetsCurrent",
+          "source_value_text": "125605000000",
+          "source_unit": "USD",
+          "source_period_kind": "INSTANT",
+          "source_start_date": null,
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "CURRENT_LIABILITIES",
+      "value": "32163000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "INSTANT",
+        "start_date": null,
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": null
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "LiabilitiesCurrent",
+          "source_value_text": "32163000000",
+          "source_unit": "USD",
+          "source_period_kind": "INSTANT",
+          "source_start_date": null,
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "CURRENT_PORTION_LONG_TERM_DEBT",
+      "value": "999000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "INSTANT",
+        "start_date": null,
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": null
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "LongTermDebtCurrent",
+          "source_value_text": "999000000",
+          "source_unit": "USD",
+          "source_period_kind": "INSTANT",
+          "source_start_date": null,
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "DILUTED_EPS",
+      "value": "4.9",
+      "unit_kind": "PER_SHARE",
+      "unit_code": "USD_PER_SHARE",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": "ANNUAL"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "EarningsPerShareDiluted",
+          "source_value_text": "4.9",
+          "source_unit": "USD/shares",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "DILUTED_EPS",
+      "value": "0.76",
+      "unit_kind": "PER_SHARE",
+      "unit_code": "USD_PER_SHARE",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2025-04-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q1",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000052",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "EarningsPerShareDiluted",
+          "source_value_text": "0.76",
+          "source_unit": "USD/shares",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-04-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "DILUTED_EPS",
+      "value": "1.08",
+      "unit_kind": "PER_SHARE",
+      "unit_code": "USD_PER_SHARE",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-04-28",
+        "end_date": "2025-07-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q2",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-25-000209",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "EarningsPerShareDiluted",
+          "source_value_text": "1.08",
+          "source_unit": "USD/shares",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-04-28",
+          "source_end_date": "2025-07-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "DILUTED_EPS",
+      "value": "1.3",
+      "unit_kind": "PER_SHARE",
+      "unit_code": "USD_PER_SHARE",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-07-28",
+        "end_date": "2025-10-26",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q3",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "EarningsPerShareDiluted",
+          "source_value_text": "1.3",
+          "source_unit": "USD/shares",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-07-28",
+          "source_end_date": "2025-10-26"
+        }
+      ]
+    },
+    {
+      "metric_code": "DILUTED_WEIGHTED_AVERAGE_SHARES",
+      "value": "24514000000",
+      "unit_kind": "SHARES",
+      "unit_code": "SHARES",
+      "currency": null,
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": "ANNUAL"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "WeightedAverageNumberOfDilutedSharesOutstanding",
+          "source_value_text": "24514000000",
+          "source_unit": "shares",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "DILUTED_WEIGHTED_AVERAGE_SHARES",
+      "value": "24611000000",
+      "unit_kind": "SHARES",
+      "unit_code": "SHARES",
+      "currency": null,
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2025-04-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q1",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000052",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "WeightedAverageNumberOfDilutedSharesOutstanding",
+          "source_value_text": "24611000000",
+          "source_unit": "shares",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-04-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "DILUTED_WEIGHTED_AVERAGE_SHARES",
+      "value": "24532000000",
+      "unit_kind": "SHARES",
+      "unit_code": "SHARES",
+      "currency": null,
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-04-28",
+        "end_date": "2025-07-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q2",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-25-000209",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "WeightedAverageNumberOfDilutedSharesOutstanding",
+          "source_value_text": "24532000000",
+          "source_unit": "shares",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-04-28",
+          "source_end_date": "2025-07-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "DILUTED_WEIGHTED_AVERAGE_SHARES",
+      "value": "24483000000",
+      "unit_kind": "SHARES",
+      "unit_code": "SHARES",
+      "currency": null,
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-07-28",
+        "end_date": "2025-10-26",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q3",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "WeightedAverageNumberOfDilutedSharesOutstanding",
+          "source_value_text": "24483000000",
+          "source_unit": "shares",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-07-28",
+          "source_end_date": "2025-10-26"
+        }
+      ]
+    },
+    {
+      "metric_code": "DIVIDENDS_PAID",
+      "value": "974000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": "ANNUAL"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "PaymentsOfDividends",
+          "source_value_text": "974000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "DIVIDENDS_PAID",
+      "value": "244000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2025-04-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q1",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000052",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "PaymentsOfDividends",
+          "source_value_text": "244000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-04-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "DIVIDENDS_PAID",
+      "value": "244000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-04-28",
+        "end_date": "2025-07-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q2",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-25-000209",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "PaymentsOfDividends",
+          "source_value_text": "244000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-04-28",
+          "source_end_date": "2025-07-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "DIVIDENDS_PAID",
+      "value": "244000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "PERIOD_DERIVED",
+      "rule_version": "sec-adjacent-ytd-quarter-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-07-28",
+        "end_date": "2025-10-26",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q3",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "NINE_MONTH_YTD",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "PaymentsOfDividends",
+          "source_value_text": "732000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-10-26"
+        },
+        {
+          "role": "SIX_MONTH_YTD",
+          "accession_number": "0001045810-25-000209",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "PaymentsOfDividends",
+          "source_value_text": "488000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-07-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "DIVIDENDS_PAID",
+      "value": "242000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "PERIOD_DERIVED",
+      "rule_version": "sec-q4-fy-minus-nine-month-ytd-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-10-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q4",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "FISCAL_YEAR",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "PaymentsOfDividends",
+          "source_value_text": "974000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        },
+        {
+          "role": "NINE_MONTH_YTD",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "PaymentsOfDividends",
+          "source_value_text": "732000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-10-26"
+        }
+      ]
+    },
+    {
+      "metric_code": "GROSS_PROFIT",
+      "value": "153463000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": "ANNUAL"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "GrossProfit",
+          "source_value_text": "153463000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "GROSS_PROFIT",
+      "value": "26668000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2025-04-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q1",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000052",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "GrossProfit",
+          "source_value_text": "26668000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-04-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "GROSS_PROFIT",
+      "value": "33853000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-04-28",
+        "end_date": "2025-07-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q2",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-25-000209",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "GrossProfit",
+          "source_value_text": "33853000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-04-28",
+          "source_end_date": "2025-07-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "GROSS_PROFIT",
+      "value": "41849000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-07-28",
+        "end_date": "2025-10-26",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q3",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "GrossProfit",
+          "source_value_text": "41849000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-07-28",
+          "source_end_date": "2025-10-26"
+        }
+      ]
+    },
+    {
+      "metric_code": "GROSS_PROFIT",
+      "value": "51093000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "PERIOD_DERIVED",
+      "rule_version": "sec-q4-fy-minus-nine-month-ytd-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-10-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q4",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "FISCAL_YEAR",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "GrossProfit",
+          "source_value_text": "153463000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        },
+        {
+          "role": "NINE_MONTH_YTD",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "GrossProfit",
+          "source_value_text": "102370000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-10-26"
+        }
+      ]
+    },
+    {
+      "metric_code": "LONG_TERM_DEBT_NONCURRENT",
+      "value": "7469000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "INSTANT",
+        "start_date": null,
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": null
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "LongTermDebtNoncurrent",
+          "source_value_text": "7469000000",
+          "source_unit": "USD",
+          "source_period_kind": "INSTANT",
+          "source_start_date": null,
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "NET_INCOME",
+      "value": "120067000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": "ANNUAL"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "NetIncomeLoss",
+          "source_value_text": "120067000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "NET_INCOME",
+      "value": "18775000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2025-04-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q1",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000052",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "NetIncomeLoss",
+          "source_value_text": "18775000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-04-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "NET_INCOME",
+      "value": "26422000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-04-28",
+        "end_date": "2025-07-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q2",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-25-000209",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "NetIncomeLoss",
+          "source_value_text": "26422000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-04-28",
+          "source_end_date": "2025-07-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "NET_INCOME",
+      "value": "31910000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-07-28",
+        "end_date": "2025-10-26",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q3",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "NetIncomeLoss",
+          "source_value_text": "31910000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-07-28",
+          "source_end_date": "2025-10-26"
+        }
+      ]
+    },
+    {
+      "metric_code": "NET_INCOME",
+      "value": "42960000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "PERIOD_DERIVED",
+      "rule_version": "sec-q4-fy-minus-nine-month-ytd-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-10-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q4",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "FISCAL_YEAR",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "NetIncomeLoss",
+          "source_value_text": "120067000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        },
+        {
+          "role": "NINE_MONTH_YTD",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "NetIncomeLoss",
+          "source_value_text": "77107000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-10-26"
+        }
+      ]
+    },
+    {
+      "metric_code": "OPERATING_CASH_FLOW",
+      "value": "102718000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": "ANNUAL"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "NetCashProvidedByUsedInOperatingActivities",
+          "source_value_text": "102718000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "OPERATING_CASH_FLOW",
+      "value": "27414000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2025-04-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q1",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000052",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "NetCashProvidedByUsedInOperatingActivities",
+          "source_value_text": "27414000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-04-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "OPERATING_CASH_FLOW",
+      "value": "15365000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "PERIOD_DERIVED",
+      "rule_version": "sec-adjacent-ytd-quarter-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-04-28",
+        "end_date": "2025-07-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q2",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "SIX_MONTH_YTD",
+          "accession_number": "0001045810-25-000209",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "NetCashProvidedByUsedInOperatingActivities",
+          "source_value_text": "42779000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-07-27"
+        },
+        {
+          "role": "THREE_MONTH_YTD",
+          "accession_number": "0001045810-26-000052",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "NetCashProvidedByUsedInOperatingActivities",
+          "source_value_text": "27414000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-04-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "OPERATING_CASH_FLOW",
+      "value": "23751000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "PERIOD_DERIVED",
+      "rule_version": "sec-adjacent-ytd-quarter-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-07-28",
+        "end_date": "2025-10-26",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q3",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "NINE_MONTH_YTD",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "NetCashProvidedByUsedInOperatingActivities",
+          "source_value_text": "66530000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-10-26"
+        },
+        {
+          "role": "SIX_MONTH_YTD",
+          "accession_number": "0001045810-25-000209",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "NetCashProvidedByUsedInOperatingActivities",
+          "source_value_text": "42779000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-07-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "OPERATING_CASH_FLOW",
+      "value": "36188000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "PERIOD_DERIVED",
+      "rule_version": "sec-q4-fy-minus-nine-month-ytd-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-10-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q4",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "FISCAL_YEAR",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "NetCashProvidedByUsedInOperatingActivities",
+          "source_value_text": "102718000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        },
+        {
+          "role": "NINE_MONTH_YTD",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "NetCashProvidedByUsedInOperatingActivities",
+          "source_value_text": "66530000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-10-26"
+        }
+      ]
+    },
+    {
+      "metric_code": "OPERATING_INCOME",
+      "value": "130387000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": "ANNUAL"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "OperatingIncomeLoss",
+          "source_value_text": "130387000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "OPERATING_INCOME",
+      "value": "21638000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2025-04-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q1",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000052",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "OperatingIncomeLoss",
+          "source_value_text": "21638000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-04-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "OPERATING_INCOME",
+      "value": "28440000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-04-28",
+        "end_date": "2025-07-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q2",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-25-000209",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "OperatingIncomeLoss",
+          "source_value_text": "28440000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-04-28",
+          "source_end_date": "2025-07-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "OPERATING_INCOME",
+      "value": "36010000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-07-28",
+        "end_date": "2025-10-26",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q3",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "OperatingIncomeLoss",
+          "source_value_text": "36010000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-07-28",
+          "source_end_date": "2025-10-26"
+        }
+      ]
+    },
+    {
+      "metric_code": "OPERATING_INCOME",
+      "value": "44299000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "PERIOD_DERIVED",
+      "rule_version": "sec-q4-fy-minus-nine-month-ytd-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-10-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q4",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "FISCAL_YEAR",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "OperatingIncomeLoss",
+          "source_value_text": "130387000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        },
+        {
+          "role": "NINE_MONTH_YTD",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "OperatingIncomeLoss",
+          "source_value_text": "86088000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-10-26"
+        }
+      ]
+    },
+    {
+      "metric_code": "SHAREHOLDERS_EQUITY",
+      "value": "157293000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "INSTANT",
+        "start_date": null,
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": null
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "StockholdersEquity",
+          "source_value_text": "157293000000",
+          "source_unit": "USD",
+          "source_period_kind": "INSTANT",
+          "source_start_date": null,
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "SHARE_REPURCHASES",
+      "value": "40086000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": "ANNUAL"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "PaymentsForRepurchaseOfCommonStock",
+          "source_value_text": "40086000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "SHARE_REPURCHASES",
+      "value": "14095000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-01-27",
+        "end_date": "2025-04-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q1",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000052",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "PaymentsForRepurchaseOfCommonStock",
+          "source_value_text": "14095000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-04-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "SHARE_REPURCHASES",
+      "value": "9720000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "PERIOD_DERIVED",
+      "rule_version": "sec-adjacent-ytd-quarter-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-04-28",
+        "end_date": "2025-07-27",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q2",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "SIX_MONTH_YTD",
+          "accession_number": "0001045810-25-000209",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "PaymentsForRepurchaseOfCommonStock",
+          "source_value_text": "23815000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-07-27"
+        },
+        {
+          "role": "THREE_MONTH_YTD",
+          "accession_number": "0001045810-26-000052",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "PaymentsForRepurchaseOfCommonStock",
+          "source_value_text": "14095000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-04-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "SHARE_REPURCHASES",
+      "value": "12456000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "PERIOD_DERIVED",
+      "rule_version": "sec-adjacent-ytd-quarter-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-07-28",
+        "end_date": "2025-10-26",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q3",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "NINE_MONTH_YTD",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "PaymentsForRepurchaseOfCommonStock",
+          "source_value_text": "36271000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-10-26"
+        },
+        {
+          "role": "SIX_MONTH_YTD",
+          "accession_number": "0001045810-25-000209",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "PaymentsForRepurchaseOfCommonStock",
+          "source_value_text": "23815000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-07-27"
+        }
+      ]
+    },
+    {
+      "metric_code": "SHARE_REPURCHASES",
+      "value": "3815000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "PERIOD_DERIVED",
+      "rule_version": "sec-q4-fy-minus-nine-month-ytd-v1",
+      "period": {
+        "kind": "DURATION",
+        "start_date": "2025-10-27",
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "Q4",
+        "duration_scope": "STANDALONE_QUARTER"
+      },
+      "evidence": [
+        {
+          "role": "FISCAL_YEAR",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "PaymentsForRepurchaseOfCommonStock",
+          "source_value_text": "40086000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2026-01-25"
+        },
+        {
+          "role": "NINE_MONTH_YTD",
+          "accession_number": "0001045810-25-000230",
+          "filing_form": "10-Q",
+          "concept_namespace": "us-gaap",
+          "concept_name": "PaymentsForRepurchaseOfCommonStock",
+          "source_value_text": "36271000000",
+          "source_unit": "USD",
+          "source_period_kind": "DURATION",
+          "source_start_date": "2025-01-27",
+          "source_end_date": "2025-10-26"
+        }
+      ]
+    },
+    {
+      "metric_code": "TOTAL_ASSETS",
+      "value": "206803000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "INSTANT",
+        "start_date": null,
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": null
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "Assets",
+          "source_value_text": "206803000000",
+          "source_unit": "USD",
+          "source_period_kind": "INSTANT",
+          "source_start_date": null,
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    },
+    {
+      "metric_code": "TOTAL_LIABILITIES",
+      "value": "49510000000",
+      "unit_kind": "MONETARY",
+      "unit_code": "USD",
+      "currency": "USD",
+      "derivation_kind": "DIRECT",
+      "rule_version": "sec-direct-normalization-v1",
+      "period": {
+        "kind": "INSTANT",
+        "start_date": null,
+        "end_date": "2026-01-25",
+        "fiscal_year": 2026,
+        "fiscal_period": "FY",
+        "duration_scope": null
+      },
+      "evidence": [
+        {
+          "role": "PRIMARY",
+          "accession_number": "0001045810-26-000021",
+          "filing_form": "10-K",
+          "concept_namespace": "us-gaap",
+          "concept_name": "Liabilities",
+          "source_value_text": "49510000000",
+          "source_unit": "USD",
+          "source_period_kind": "INSTANT",
+          "source_start_date": null,
+          "source_end_date": "2026-01-25"
+        }
+      ]
+    }
+  ],
+  "unavailable": [
+    {
+      "metric_code": "BASIC_EPS",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q4",
+      "duration_scope": "STANDALONE_QUARTER",
+      "reason_code": "DIRECT_STANDALONE_Q4_NOT_REPORTED"
+    },
+    {
+      "metric_code": "CAPITAL_EXPENDITURE",
+      "fiscal_year": 2026,
+      "fiscal_period": "FY",
+      "duration_scope": "ANNUAL",
+      "reason_code": "APPROVED_CONCEPT_NOT_REPORTED"
+    },
+    {
+      "metric_code": "CAPITAL_EXPENDITURE",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q1",
+      "duration_scope": "STANDALONE_QUARTER",
+      "reason_code": "APPROVED_CONCEPT_NOT_REPORTED"
+    },
+    {
+      "metric_code": "CAPITAL_EXPENDITURE",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q2",
+      "duration_scope": "STANDALONE_QUARTER",
+      "reason_code": "APPROVED_CONCEPT_NOT_REPORTED"
+    },
+    {
+      "metric_code": "CAPITAL_EXPENDITURE",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q3",
+      "duration_scope": "STANDALONE_QUARTER",
+      "reason_code": "APPROVED_CONCEPT_NOT_REPORTED"
+    },
+    {
+      "metric_code": "CAPITAL_EXPENDITURE",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q4",
+      "duration_scope": "STANDALONE_QUARTER",
+      "reason_code": "APPROVED_CONCEPT_NOT_REPORTED"
+    },
+    {
+      "metric_code": "DILUTED_EPS",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q4",
+      "duration_scope": "STANDALONE_QUARTER",
+      "reason_code": "DIRECT_STANDALONE_Q4_NOT_REPORTED"
+    },
+    {
+      "metric_code": "DILUTED_WEIGHTED_AVERAGE_SHARES",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q4",
+      "duration_scope": "STANDALONE_QUARTER",
+      "reason_code": "DIRECT_STANDALONE_Q4_NOT_REPORTED"
+    },
+    {
+      "metric_code": "REVENUE",
+      "fiscal_year": 2026,
+      "fiscal_period": "FY",
+      "duration_scope": "ANNUAL",
+      "reason_code": "APPROVED_CONCEPT_NOT_REPORTED"
+    },
+    {
+      "metric_code": "REVENUE",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q1",
+      "duration_scope": "STANDALONE_QUARTER",
+      "reason_code": "APPROVED_CONCEPT_NOT_REPORTED"
+    },
+    {
+      "metric_code": "REVENUE",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q2",
+      "duration_scope": "STANDALONE_QUARTER",
+      "reason_code": "APPROVED_CONCEPT_NOT_REPORTED"
+    },
+    {
+      "metric_code": "REVENUE",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q3",
+      "duration_scope": "STANDALONE_QUARTER",
+      "reason_code": "APPROVED_CONCEPT_NOT_REPORTED"
+    },
+    {
+      "metric_code": "REVENUE",
+      "fiscal_year": 2026,
+      "fiscal_period": "Q4",
+      "duration_scope": "STANDALONE_QUARTER",
+      "reason_code": "APPROVED_CONCEPT_NOT_REPORTED"
+    },
+    {
+      "metric_code": "SHORT_TERM_INVESTMENTS",
+      "fiscal_year": 2026,
+      "fiscal_period": "FY",
+      "duration_scope": null,
+      "reason_code": "APPROVED_CONCEPT_NOT_REPORTED"
+    }
+  ]
+}

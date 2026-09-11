@@ -1,0 +1,11 @@
+{
+  "id": "392296fb-b2fb-5441-b1b1-4a3f98148da2",
+  "code": "TOTAL_LIABILITIES",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "BALANCE_SHEET",
+  "statement_placement": "TOTAL_LIABILITIES",
+  "meaning": "Consolidated total liabilities owed by the reporting entity at the stated instant.",
+  "expected_period_kind": "INSTANT",
+  "allowed_unit_kinds": ["MONETARY"]
+}

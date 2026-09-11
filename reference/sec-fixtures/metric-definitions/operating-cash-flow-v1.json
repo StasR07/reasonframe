@@ -1,0 +1,11 @@
+{
+  "id": "9a94b001-e6b7-4edf-b16d-7fea6c37793b",
+  "code": "OPERATING_CASH_FLOW",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "CASH_FLOW_STATEMENT",
+  "statement_placement": "OPERATING_CASH_FLOW",
+  "meaning": "Consolidated net cash provided by or used in operating activities for the stated issuer period.",
+  "expected_period_kind": "DURATION",
+  "allowed_unit_kinds": ["MONETARY"]
+}

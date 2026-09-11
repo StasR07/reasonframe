@@ -1,0 +1,11 @@
+{
+  "id": "e342f0d5-01bc-46ae-9c2f-a89886cd34ac",
+  "code": "SHORT_TERM_INVESTMENTS",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "BALANCE_SHEET",
+  "statement_placement": "SHORT_TERM_INVESTMENTS",
+  "meaning": "Current liquid investments reported separately from cash and cash equivalents at the stated instant, without aggregation of noncurrent investment portfolios.",
+  "expected_period_kind": "INSTANT",
+  "allowed_unit_kinds": ["MONETARY"]
+}

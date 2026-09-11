@@ -1,0 +1,11 @@
+{
+  "id": "7eb0fafc-288e-5541-acf5-0038a57ab78d",
+  "code": "SHAREHOLDERS_EQUITY",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "BALANCE_SHEET",
+  "statement_placement": "SHAREHOLDERS_EQUITY",
+  "meaning": "Consolidated equity attributable to the reporting entity's stockholders at the stated instant, excluding unreviewed noncontrolling-interest equivalence.",
+  "expected_period_kind": "INSTANT",
+  "allowed_unit_kinds": ["MONETARY"]
+}

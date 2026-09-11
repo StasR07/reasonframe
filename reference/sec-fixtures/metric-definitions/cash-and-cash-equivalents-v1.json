@@ -1,0 +1,11 @@
+{
+  "id": "3bbdc2b0-f6c2-5561-9888-579bca04b50a",
+  "code": "CASH_AND_CASH_EQUIVALENTS",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "BALANCE_SHEET",
+  "statement_placement": "CASH_AND_CASH_EQUIVALENTS",
+  "meaning": "Consolidated cash and cash equivalents held by the reporting entity at the stated instant.",
+  "expected_period_kind": "INSTANT",
+  "allowed_unit_kinds": ["MONETARY"]
+}

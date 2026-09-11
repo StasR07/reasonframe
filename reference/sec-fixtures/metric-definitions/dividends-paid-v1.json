@@ -1,0 +1,11 @@
+{
+  "id": "f193e6aa-f4a3-4c70-a253-c5bb533b7e84",
+  "code": "DIVIDENDS_PAID",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "CASH_FLOW_STATEMENT",
+  "statement_placement": "DIVIDENDS_PAID",
+  "meaning": "Cash dividends paid to common shareholders for the stated issuer period, preserved as the source-reported positive outflow magnitude and never inferred from absence.",
+  "expected_period_kind": "DURATION",
+  "allowed_unit_kinds": ["MONETARY"]
+}

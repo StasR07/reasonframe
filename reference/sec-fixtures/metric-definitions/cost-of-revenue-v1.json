@@ -1,0 +1,11 @@
+{
+  "id": "a0d22e66-5f6f-59da-99fe-4b48c62532f1",
+  "code": "COST_OF_REVENUE",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "INCOME_STATEMENT",
+  "statement_placement": "COST_OF_REVENUE",
+  "meaning": "Consolidated costs directly associated with revenue recognized from ordinary activities for the stated issuer period.",
+  "expected_period_kind": "DURATION",
+  "allowed_unit_kinds": ["MONETARY"]
+}

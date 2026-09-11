@@ -1,0 +1,11 @@
+{
+  "id": "b4b89985-c2ea-5898-b79d-678b58bb727b",
+  "code": "DILUTED_WEIGHTED_AVERAGE_SHARES",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "INCOME_STATEMENT",
+  "statement_placement": "DILUTED_WEIGHTED_AVERAGE_SHARES",
+  "meaning": "Weighted average common shares outstanding on a diluted basis for the stated issuer period.",
+  "expected_period_kind": "DURATION",
+  "allowed_unit_kinds": ["SHARES"]
+}

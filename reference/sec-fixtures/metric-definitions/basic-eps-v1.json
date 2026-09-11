@@ -1,0 +1,11 @@
+{
+  "id": "c4584ae8-081b-55f0-81e4-99400f91a9c3",
+  "code": "BASIC_EPS",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "INCOME_STATEMENT",
+  "statement_placement": "BASIC_EPS",
+  "meaning": "Basic earnings or loss attributable to each common share for the stated issuer period.",
+  "expected_period_kind": "DURATION",
+  "allowed_unit_kinds": ["PER_SHARE"]
+}

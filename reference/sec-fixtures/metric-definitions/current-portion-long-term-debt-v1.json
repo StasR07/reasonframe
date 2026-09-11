@@ -1,0 +1,11 @@
+{
+  "id": "610aad30-456d-4b8a-a9f3-7ad72c1ed152",
+  "code": "CURRENT_PORTION_LONG_TERM_DEBT",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "BALANCE_SHEET",
+  "statement_placement": "CURRENT_PORTION_LONG_TERM_DEBT",
+  "meaning": "Contractual long-term debt classified as due within the current period at the stated instant, excluding short-term borrowings and finance leases.",
+  "expected_period_kind": "INSTANT",
+  "allowed_unit_kinds": ["MONETARY"]
+}

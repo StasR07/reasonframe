@@ -1,0 +1,11 @@
+{
+  "id": "f758d1f9-a738-5759-a288-362e80e20fca",
+  "code": "OPERATING_INCOME",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "INCOME_STATEMENT",
+  "statement_placement": "OPERATING_INCOME",
+  "meaning": "Consolidated operating income or loss from the reporting entity's operations for the stated issuer period.",
+  "expected_period_kind": "DURATION",
+  "allowed_unit_kinds": ["MONETARY"]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "94c7e16d-d12d-4851-9ff5-cb86c03380a0",
+  "code": "LONG_TERM_DEBT_NONCURRENT",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "BALANCE_SHEET",
+  "statement_placement": "LONG_TERM_DEBT_NONCURRENT",
+  "meaning": "Contractual long-term debt classified as noncurrent at the stated instant, excluding current maturities and finance leases.",
+  "expected_period_kind": "INSTANT",
+  "allowed_unit_kinds": ["MONETARY"]
+}

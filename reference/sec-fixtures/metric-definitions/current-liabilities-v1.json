@@ -1,0 +1,11 @@
+{
+  "id": "22c37ac6-2919-5717-a945-d532faa35afb",
+  "code": "CURRENT_LIABILITIES",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "BALANCE_SHEET",
+  "statement_placement": "CURRENT_LIABILITIES",
+  "meaning": "Consolidated liabilities classified as current by the reporting entity at the stated instant.",
+  "expected_period_kind": "INSTANT",
+  "allowed_unit_kinds": ["MONETARY"]
+}

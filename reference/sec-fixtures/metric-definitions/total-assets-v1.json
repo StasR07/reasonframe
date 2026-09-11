@@ -1,0 +1,11 @@
+{
+  "id": "a39cee58-6e34-5df0-8f81-65533eaa0fb0",
+  "code": "TOTAL_ASSETS",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "BALANCE_SHEET",
+  "statement_placement": "TOTAL_ASSETS",
+  "meaning": "Consolidated total assets controlled by the reporting entity at the stated instant.",
+  "expected_period_kind": "INSTANT",
+  "allowed_unit_kinds": ["MONETARY"]
+}

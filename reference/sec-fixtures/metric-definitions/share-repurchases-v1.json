@@ -1,0 +1,11 @@
+{
+  "id": "3cd05467-2ef3-4a31-9f9e-499669150f7e",
+  "code": "SHARE_REPURCHASES",
+  "definition_version": "v1",
+  "status": "APPROVED",
+  "category": "CASH_FLOW_STATEMENT",
+  "statement_placement": "SHARE_REPURCHASES",
+  "meaning": "Cash paid to repurchase common stock for the stated issuer period, preserved as the source-reported positive outflow magnitude.",
+  "expected_period_kind": "DURATION",
+  "allowed_unit_kinds": ["MONETARY"]
+}
