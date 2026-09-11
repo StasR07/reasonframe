@@ -91,7 +91,7 @@ The strongest packaged support today is **macOS on Apple Silicon (ARM64)**.
 
 1. Download the latest Reasonframe DMG from the repository's **Releases** page.
 2. Install and open `Reasonframe.app`.
-3. Complete onboarding with your Tiingo token. FRED and SEC access are included.
+3. Add a Tiingo API token. Create a free Tiingo account if needed, then copy your token from the Tiingo API token page and paste it into Settings → Market Data. FRED and SEC access are included.
 4. Connect a supported AI provider if you want to use analyst workflows.
 5. Allow the initial local data setup to complete.
 
