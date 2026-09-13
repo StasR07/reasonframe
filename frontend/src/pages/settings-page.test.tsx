@@ -34,15 +34,24 @@ it("groups appearance, AI, data, and About settings with an explicit Theme label
   render(<MemoryRouter><ThemeProvider><SettingsPage/></ThemeProvider></MemoryRouter>)
   expect(screen.getByRole("heading", { name: "Settings" })).toBeInTheDocument()
   expect(screen.getByRole("combobox", { name: "Theme" })).toHaveTextContent("System")
-  expect(await screen.findByText("Connected with ChatGPT")).toBeInTheDocument()
-  await userEvent.click(screen.getByRole("button", { name: "Retry detection" }))
-  await waitFor(() => expect(refreshProvidersMock).toHaveBeenCalledOnce())
+  expect(await screen.findByText("ChatGPT subscription is connected")).toBeInTheDocument()
+  expect(screen.queryByRole("button", { name: /Retry detection|Refresh status/ })).not.toBeInTheDocument()
   expect(screen.getByText("Tiingo")).toBeInTheDocument()
   expect(await screen.findAllByText("Included with this release")).toHaveLength(2)
   expect(screen.getByText("Financial research with specialist AI analysts.")).toBeInTheDocument()
   expect(screen.getByText("Version 0.1.0-rc.1")).toBeInTheDocument()
   expect(screen.getByText(/Reasonframe combines company fundamentals/)).toBeInTheDocument()
   expect(screen.getByText(/Reasonframe does not provide investment advice/)).toBeInTheDocument()
+})
+
+it("offers Try again only when the bundled provider runtime fails", async () => {
+  const failed = { provider: "chatgpt_codex", connected: false, state: "RUNTIME_ERROR", model: null, plan_type: null, installed: true, supported: true, message: "OpenAI Codex could not be initialized." }
+  statusMock.mockResolvedValue(failed)
+  providersMock.mockResolvedValue([failed])
+  refreshProvidersMock.mockResolvedValue([failed])
+  render(<MemoryRouter><ThemeProvider><SettingsPage/></ThemeProvider></MemoryRouter>)
+  await userEvent.click(await screen.findByRole("button", { name: "Try again" }))
+  await waitFor(() => expect(refreshProvidersMock).toHaveBeenCalledOnce())
 })
 
 it("shows the ChatGPT sign-in action without Codex CLI installation guidance", async () => {

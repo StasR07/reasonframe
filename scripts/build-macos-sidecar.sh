@@ -9,7 +9,9 @@ uv run --with pyinstaller pyinstaller --clean --noconfirm --onefile \
   --workpath /tmp/finance-terminal-sidecar-build \
   --specpath /tmp/finance-terminal-sidecar-spec \
   --collect-all edgar \
+  --collect-all claude_agent_sdk \
   --collect-all finance_terminal \
+  --collect-all keyring \
   --collect-all openai_codex \
   --collect-all codex_cli_bin \
   --hidden-import finance_terminal.api \

@@ -1,9 +1,8 @@
-"""Sanitized, cached executable discovery for desktop AI provider processes."""
+"""Sanitized environment construction for bundled AI provider runtimes."""
 
 from __future__ import annotations
 
 import os
-import shutil
 from pathlib import Path
 
 
@@ -42,12 +41,11 @@ def normalized_provider_path(inherited: str | None = None, home: Path | None = N
 
 
 class ProviderExecutionEnvironment:
-    """One provider-process environment with refreshable executable caching."""
+    """One bounded environment for provider runtimes shipped inside SDK packages."""
 
     def __init__(self, *, inherited_path: str | None = None, home: Path | None = None) -> None:
         self.home = (home or real_user_home()).resolve()
         self.path = normalized_provider_path(inherited_path, self.home)
-        self._executables: dict[str, Path | None] = {}
 
     def subprocess_env(self) -> dict[str, str]:
         environment = os.environ.copy()
@@ -55,12 +53,3 @@ class ProviderExecutionEnvironment:
         environment["PATH"] = self.path
         environment.pop("CODEX_HOME", None)
         return environment
-
-    def resolve(self, executable: str) -> Path | None:
-        if executable not in self._executables:
-            found = shutil.which(executable, path=self.path)
-            self._executables[executable] = Path(found).resolve() if found else None
-        return self._executables[executable]
-
-    def refresh(self) -> None:
-        self._executables.clear()

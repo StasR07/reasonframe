@@ -14,7 +14,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, SecretStr
 
 from .analysis import (
     AnalysisResponse, AnalysisService, CompanyAnalysisRequest,
@@ -22,6 +22,7 @@ from .analysis import (
 )
 from .ai import AskRequest, AskResponse, AskService
 from .ai_provider import (
+    AIDisconnectedError,
     AIAccountStatus,
     AIConnectResult,
     AIModel,
@@ -64,6 +65,11 @@ class SyncRequest(BaseModel):
 class AIProviderSelection(BaseModel):
     model_config = ConfigDict(extra="forbid")
     provider: str
+
+
+class AIConnectInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    credential: SecretStr | None = None
 
 
 def create_app(
@@ -207,10 +213,11 @@ def create_app(
         config.remove_secret("edgar_identity")
         return {"configured": False}
 
-    def start_sync(function) -> dict[str, object]:
+    def start_sync(function, operation: str) -> dict[str, object]:
         nonlocal background_sync_task
         if background_sync_task is None or background_sync_task.done():
-            background_sync_task = asyncio.create_task(asyncio.to_thread(function))
+            if sync.reserve(operation):
+                background_sync_task = asyncio.create_task(asyncio.to_thread(function))
         return sync.public_status()
 
     @app.get("/api/v1/data/status")
@@ -219,11 +226,13 @@ def create_app(
 
     @app.post("/api/v1/data/bootstrap")
     async def start_bootstrap() -> dict[str, object]:
-        return start_sync(sync.run_bootstrap)
+        return start_sync(lambda: sync.run_bootstrap(_lock_reserved=True), "BOOTSTRAP")
 
     @app.post("/api/v1/data/refresh")
     async def start_refresh(request: SyncRequest) -> dict[str, object]:
-        return start_sync(lambda: sync.run_refresh(automatic=request.automatic))
+        return start_sync(
+            lambda: sync.run_refresh(automatic=request.automatic, _lock_reserved=True), "REFRESH"
+        )
 
     @app.post("/api/v1/query", response_model=QueryResponse)
     def query(request: QueryRequest, http_request: Request) -> QueryResponse:
@@ -291,25 +300,28 @@ def create_app(
             raise HTTPException(400, str(exc)) from exc
 
     @app.post("/api/v1/ai/connect", response_model=AIConnectResult)
-    async def ai_connect() -> AIConnectResult:
+    async def ai_connect(request: AIConnectInput | None = None) -> AIConnectResult:
         try:
-            return await ai_provider.connect()
+            credential = request.credential.get_secret_value() if request and request.credential else None
+            return await ai_provider.connect(credential)
+        except AIDisconnectedError as exc:
+            raise HTTPException(400, str(exc)) from exc
         except AIProviderError as exc:
-            raise HTTPException(503, "ChatGPT connection could not be started") from exc
+            raise HTTPException(503, "AI provider connection could not be started") from exc
 
     @app.post("/api/v1/ai/disconnect", response_model=AIAccountStatus)
     async def ai_disconnect() -> AIAccountStatus:
         try:
             return await ai_provider.disconnect()
         except AIProviderError as exc:
-            raise HTTPException(503, "ChatGPT could not be disconnected") from exc
+            raise HTTPException(503, "AI provider could not be disconnected") from exc
 
     @app.get("/api/v1/ai/models", response_model=list[AIModel])
     async def ai_models() -> list[AIModel]:
         try:
             return await ai_provider.models()
         except AIProviderError as exc:
-            raise HTTPException(409, "Connect ChatGPT before listing models") from exc
+            raise HTTPException(409, "Connect the selected AI provider before listing models") from exc
 
     @app.post("/api/v1/ai/verify")
     async def verify_ai_provider() -> dict[str, bool]:

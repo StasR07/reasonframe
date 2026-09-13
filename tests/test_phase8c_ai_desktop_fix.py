@@ -9,8 +9,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from finance_terminal.ai_provider import (
-    AIProviderState, AIProviderStatus, ClaudeCodeProvider, CodexSubscriptionProvider,
-    LazyCodexProvider, ProviderManager,
+    AIDisconnectedError, AIConnectionMethod, AIProviderState, AIProviderStatus,
+    ClaudeAgentSDKProvider, CodexSubscriptionProvider, LazyCodexProvider, ProviderManager,
 )
 from finance_terminal.api import create_app
 from finance_terminal.provider_runtime import ProviderExecutionEnvironment
@@ -25,74 +25,80 @@ def executable(path: Path) -> Path:
     return path
 
 
-def test_provider_discovery_uses_inherited_and_common_gui_paths_and_preserves_home(tmp_path, monkeypatch) -> None:
+class MemoryCredentialStore:
+    def __init__(self, value: str | None = None) -> None:
+        self.values = {"claude_setup_token": value} if value else {}
+
+    def get(self, name: str) -> str | None:
+        return self.values.get(name)
+
+    def set(self, name: str, value: str) -> None:
+        self.values[name] = value
+
+    def delete(self, name: str) -> None:
+        self.values.pop(name, None)
+
+
+def test_provider_environment_uses_inherited_and_common_gui_paths_and_preserves_home(tmp_path, monkeypatch) -> None:
     home = tmp_path / "user-home"
     inherited = executable(tmp_path / "custom-bin" / "claude")
     common = executable(home / ".local" / "bin" / "common-provider")
     monkeypatch.setenv("CODEX_HOME", "/must/not/leak")
 
     execution = ProviderExecutionEnvironment(inherited_path=str(inherited.parent), home=home)
-    assert execution.resolve("claude") == inherited.resolve()
-    assert execution.resolve("common-provider") == common.resolve()
-    assert execution.resolve("missing-provider") is None
+    entries = execution.path.split(":")
+    assert str(inherited.parent) in entries
+    assert str(common.parent) in entries
     assert execution.subprocess_env()["HOME"] == str(home.resolve())
     assert "CODEX_HOME" not in execution.subprocess_env()
 
 
-def test_claude_invocation_uses_absolute_discovered_executable(tmp_path, monkeypatch) -> None:
-    binary = executable(tmp_path / "bin" / "claude")
-    execution = ProviderExecutionEnvironment(inherited_path=str(binary.parent), home=tmp_path / "home")
-    provider = ClaudeCodeProvider(tmp_path / "data", execution=execution)
-    captured: dict[str, object] = {}
+def test_claude_setup_token_connection_uses_credential_store(tmp_path) -> None:
+    credentials = MemoryCredentialStore()
+    provider = ClaudeAgentSDKProvider(tmp_path / "data", credential_store=credentials)
 
-    class Process:
-        returncode = 0
-
-        async def communicate(self):
-            return b'{"loggedIn":true}', b""
-
-    async def create(*arguments, **kwargs):
-        captured["arguments"] = arguments
-        captured["environment"] = kwargs["env"]
-        return Process()
-
-    monkeypatch.setattr(asyncio, "create_subprocess_exec", create)
-    code, _ = asyncio.run(provider._run("auth", "status"))
-    assert code == 0
-    assert captured["arguments"][0] == str(binary.resolve())  # type: ignore[index]
-    assert captured["environment"]["HOME"] == str((tmp_path / "home").resolve())  # type: ignore[index]
-
-
-@pytest.mark.parametrize(
-    ("result", "state"),
-    [
-        ((0, '{"loggedIn":true}'), AIProviderState.CONNECTED),
-        ((1, '{"loggedIn":false}'), AIProviderState.SIGN_IN_REQUIRED),
-        ((1, ""), AIProviderState.RUNTIME_ERROR),
-    ],
-)
-def test_claude_status_distinguishes_auth_states(tmp_path, result, state) -> None:
-    binary = executable(tmp_path / "bin" / "claude")
-    provider = ClaudeCodeProvider(
-        tmp_path / "data",
-        execution=ProviderExecutionEnvironment(inherited_path=str(binary.parent), home=tmp_path / "home"),
-    )
-
-    async def fake_run(*_arguments: str, timeout: float):
-        del timeout
-        return result
-
-    provider._run = fake_run  # type: ignore[method-assign]
     status = asyncio.run(provider.status())
-    assert status.state is state
-    assert status.connected is (state is AIProviderState.CONNECTED)
+    assert status.state is AIProviderState.SIGN_IN_REQUIRED
+    prompt = asyncio.run(provider.connect())
+    assert prompt.connection_method is AIConnectionMethod.SETUP_TOKEN
+    assert prompt.credential_required is True
+    with pytest.raises(AIDisconnectedError, match="invalid"):
+        asyncio.run(provider.connect("not-a-token"))
+
+    connected = asyncio.run(provider.connect("sk-ant-oat01-test-subscription-token"))
+    assert connected.connected is True
+    assert credentials.values["claude_setup_token"].startswith("sk-ant-oat")
+    assert asyncio.run(provider.status()).state is AIProviderState.CONNECTED
+    asyncio.run(provider.disconnect())
+    assert asyncio.run(provider.status()).state is AIProviderState.SIGN_IN_REQUIRED
 
 
-def test_missing_provider_state_is_explicit(tmp_path) -> None:
-    provider = ClaudeCodeProvider(
-        tmp_path / "data",
-        execution=ProviderExecutionEnvironment(inherited_path=str(tmp_path / "empty"), home=tmp_path / "home"),
+def test_claude_setup_token_api_never_returns_the_credential(tmp_path) -> None:
+    paths = RuntimePaths.resolve(tmp_path / "app-data")
+    store = SQLiteStore(paths.database)
+    credentials = MemoryCredentialStore()
+    provider = ClaudeAgentSDKProvider(paths.root, credential_store=credentials)
+    try:
+        with TestClient(create_app(store, provider=provider, runtime_config=RuntimeConfig(paths))) as client:
+            assert client.post("/api/v1/ai/connect", json={"credential": "invalid"}).status_code == 400
+            response = client.post(
+                "/api/v1/ai/connect",
+                json={"credential": "sk-ant-oat01-test-subscription-token"},
+            )
+            assert response.status_code == 200
+            serialized = response.text.lower()
+            assert "sk-ant" not in serialized
+            assert response.json()["connected"] is True
+            assert client.get("/api/v1/ai/status").json()["connected"] is True
+    finally:
+        store.close()
+
+
+def test_missing_bundled_claude_sdk_state_is_explicit(tmp_path, monkeypatch) -> None:
+    provider = ClaudeAgentSDKProvider(
+        tmp_path / "data", credential_store=MemoryCredentialStore(),
     )
+    monkeypatch.setattr(provider, "_sdk_available", lambda: False)
     assert asyncio.run(provider.status()).state is AIProviderState.NOT_INSTALLED
 
 
@@ -139,13 +145,12 @@ def test_codex_bundled_runtime_failure_is_not_reported_as_not_installed(tmp_path
 
 def test_codex_clean_path_login_transition_and_structured_call_share_sdk_runtime(tmp_path, monkeypatch) -> None:
     """Every OpenAI path must work without resolving a bare codex executable."""
-    import finance_terminal.provider_runtime as runtime_module
     import openai_codex
 
     created: list[object] = []
 
     class LoginHandle:
-        auth_url = "https://auth.openai.com/codex/callback-test"
+        auth_url = "https://auth.openai.com/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3210%2Fauth%2Fcallback"
 
         def __init__(self, runtime):
             self.runtime = runtime
@@ -165,6 +170,7 @@ def test_codex_clean_path_login_transition_and_structured_call_share_sdk_runtime
             self.config = config
             self.connected = False
             self.closed = False
+            self.thread_options = None
             created.append(self)
 
         async def account(self, **_kwargs):
@@ -182,20 +188,13 @@ def test_codex_clean_path_login_transition_and_structured_call_share_sdk_runtime
                 model="terra", display_name="GPT-5.6 Terra", description="", is_default=True, hidden=False,
             )])
 
-        async def thread_start(self, **_kwargs):
+        async def thread_start(self, **kwargs):
+            self.thread_options = kwargs
             return Thread()
 
         async def close(self):
             self.closed = True
 
-    original_which = runtime_module.shutil.which
-
-    def reject_bare_codex(name, *args, **kwargs):
-        if name == "codex":
-            raise AssertionError("OpenAI attempted to resolve bare codex from PATH")
-        return original_which(name, *args, **kwargs)
-
-    monkeypatch.setattr(runtime_module.shutil, "which", reject_bare_codex)
     monkeypatch.setattr(openai_codex, "AsyncCodex", SDKRuntime)
 
     async def scenario():
@@ -206,6 +205,7 @@ def test_codex_clean_path_login_transition_and_structured_call_share_sdk_runtime
         assert (await provider.status()).state is AIProviderState.SIGN_IN_REQUIRED
         login = await provider.connect()
         assert login.auth_url == LoginHandle.auth_url
+        assert login.connection_method is AIConnectionMethod.BROWSER_REDIRECT
         await asyncio.sleep(0)
         assert (await provider.status()).state is AIProviderState.CONNECTED
         assert await provider.generate_structured("TASK: test", {"type": "object"}) == '{"ok":true}'
@@ -215,6 +215,10 @@ def test_codex_clean_path_login_transition_and_structured_call_share_sdk_runtime
 
     asyncio.run(scenario())
     assert len(created) == 1
+    runtime = created[0]
+    assert runtime.config.env["CODEX_HOME"].endswith("app-data/codex-home")
+    assert runtime.thread_options["base_instructions"]
+    assert "developer_instructions" not in runtime.thread_options
 
 
 def test_codex_authenticated_start_uses_account_only_and_same_sdk_runtime(tmp_path, monkeypatch) -> None:
@@ -261,7 +265,6 @@ def test_retry_detection_rechecks_provider_status_and_api_is_sanitized(tmp_path,
         )]
 
     async def refresh():
-        manager.execution.refresh()
         return await statuses()
 
     monkeypatch.setattr(manager, "provider_statuses", statuses)
@@ -280,33 +283,19 @@ def test_retry_detection_rechecks_provider_status_and_api_is_sanitized(tmp_path,
         store.close()
 
 
-def test_claude_timeout_kills_subprocess_and_is_safely_classified(tmp_path, monkeypatch) -> None:
-    binary = executable(tmp_path / "bin" / "claude")
-    provider = ClaudeCodeProvider(
+def test_claude_sdk_timeout_is_safely_classified(tmp_path, monkeypatch) -> None:
+    import claude_agent_sdk
+
+    provider = ClaudeAgentSDKProvider(
         tmp_path / "data", timeout_seconds=0.001,
-        execution=ProviderExecutionEnvironment(inherited_path=str(binary.parent), home=tmp_path / "home"),
+        credential_store=MemoryCredentialStore("sk-ant-oat01-test-subscription-token"),
     )
 
-    class SlowProcess:
-        returncode = None
-        killed = False
+    async def slow_query(**_kwargs):
+        await asyncio.sleep(1)
+        if False:
+            yield None
 
-        async def communicate(self):
-            await asyncio.sleep(1)
-            return b"", b""
-
-        def kill(self):
-            self.killed = True
-
-        async def wait(self):
-            self.returncode = -9
-
-    process = SlowProcess()
-
-    async def create(*_arguments, **_kwargs):
-        return process
-
-    monkeypatch.setattr(asyncio, "create_subprocess_exec", create)
+    monkeypatch.setattr(claude_agent_sdk, "query", slow_query)
     with pytest.raises(Exception, match="timed out"):
         asyncio.run(provider.generate_structured("TASK: parser", {"type": "object"}))
-    assert process.killed

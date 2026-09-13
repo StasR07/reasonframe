@@ -1,4 +1,4 @@
-"""AI provider boundary and the ChatGPT-authenticated Codex adapter."""
+"""Subscription-backed AI provider boundary for ChatGPT and Claude."""
 
 from __future__ import annotations
 
@@ -7,8 +7,8 @@ import json
 import logging
 import os
 import re
-import subprocess
 import tempfile
+from hashlib import sha256
 from enum import Enum
 from pathlib import Path
 from typing import Protocol
@@ -53,6 +53,11 @@ class AIProviderState(str, Enum):
     UNSUPPORTED = "UNSUPPORTED"
 
 
+class AIConnectionMethod(str, Enum):
+    BROWSER_REDIRECT = "BROWSER_REDIRECT"
+    SETUP_TOKEN = "SETUP_TOKEN"
+
+
 class AIProviderStatus(AIAccountStatus):
     state: AIProviderState
     installed: bool = True
@@ -65,6 +70,9 @@ class AIConnectResult(BaseModel):
     provider: str = "chatgpt_codex"
     connected: bool = False
     auth_url: str | None = None
+    connection_method: AIConnectionMethod | None = None
+    credential_required: bool = False
+    message: str | None = None
 
 
 class AIModel(BaseModel):
@@ -92,7 +100,7 @@ def select_preferred_model(
 
 class AIProvider(Protocol):
     async def status(self) -> AIAccountStatus: ...
-    async def connect(self) -> AIConnectResult: ...
+    async def connect(self, credential: str | None = None) -> AIConnectResult: ...
     async def disconnect(self) -> AIAccountStatus: ...
     async def models(self) -> list[AIModel]: ...
     async def generate_structured(
@@ -151,18 +159,21 @@ class CodexSubscriptionProvider:
 
         root = Path(data_dir or os.environ.get("FINANCE_TERMINAL_DATA_DIR", ".finance-terminal")).resolve()
         self.ai_sandbox = root / "ai-turns"
-        for path in (root, self.ai_sandbox):
+        self.codex_home = root / "codex-home"
+        for path in (root, self.ai_sandbox, self.codex_home):
             path.mkdir(parents=True, exist_ok=True, mode=0o700)
             path.chmod(0o700)
         self.execution = execution or ProviderExecutionEnvironment()
         self.executable = bundled_codex_path().resolve()
         if not self.executable.is_file():
             raise FileNotFoundError("The pinned Codex runtime is missing")
+        sdk_environment = self.execution.subprocess_env()
+        sdk_environment["CODEX_HOME"] = str(self.codex_home)
         self._codex = AsyncCodex(CodexConfig(
             codex_bin=str(self.executable),
             config_overrides=CODEX_BASE_LOCKDOWN_OVERRIDES,
             cwd=str(self.ai_sandbox),
-            env=self.execution.subprocess_env(),
+            env=sdk_environment,
         ))
         self._model_override = model_override or os.environ.get("CODEX_MODEL")
         self._login_handle = None
@@ -236,20 +247,29 @@ class CodexSubscriptionProvider:
                     self._login_handle = None
                     self._login_task = None
 
-    async def connect(self) -> AIConnectResult:
+    async def connect(self, credential: str | None = None) -> AIConnectResult:
+        if credential is not None:
+            raise AIUnavailableError("ChatGPT connection does not accept a pasted credential")
         async with self._login_lock:
             account = await self._account()
             if getattr(account, "type", None) == "chatgpt":
                 return AIConnectResult(connected=True)
             if self._login_handle is not None:
-                return AIConnectResult(auth_url=self._login_handle.auth_url)
+                return AIConnectResult(
+                    auth_url=self._login_handle.auth_url,
+                    connection_method=AIConnectionMethod.BROWSER_REDIRECT,
+                )
             try:
                 handle = await self._codex.login_chatgpt()
             except Exception as exc:
                 raise self._classify_error(exc) from exc
             self._login_handle = handle
             self._login_task = asyncio.create_task(self._watch_login(handle))
-            return AIConnectResult(auth_url=handle.auth_url)
+            return AIConnectResult(
+                auth_url=handle.auth_url,
+                connection_method=AIConnectionMethod.BROWSER_REDIRECT,
+                message="Complete ChatGPT sign-in in your browser; Reasonframe will connect automatically.",
+            )
 
     async def disconnect(self) -> AIAccountStatus:
         async with self._login_lock:
@@ -315,7 +335,7 @@ class CodexSubscriptionProvider:
                         approval_mode=ApprovalMode.deny_all,
                         config=CODEX_TURN_CONFIG,
                         cwd=sandbox_dir,
-                        developer_instructions=developer_instructions,
+                        base_instructions=developer_instructions,
                         ephemeral=True,
                         model=selected,
                         sandbox=Sandbox.read_only,
@@ -377,10 +397,11 @@ class LazyCodexProvider:
         if self._delegate is not None:
             await self._delegate.close()
         self._delegate = None
-        self.execution.refresh()
         return await self.status()
 
-    async def connect(self) -> AIConnectResult:
+    async def connect(self, credential: str | None = None) -> AIConnectResult:
+        if credential is not None:
+            raise AIUnavailableError("ChatGPT connection does not accept a pasted credential")
         return await (await self._provider()).connect()
 
     async def disconnect(self) -> AIAccountStatus:
@@ -423,7 +444,8 @@ class FakeAIProvider:
             model="test-default" if self.connected else None,
         )
 
-    async def connect(self) -> AIConnectResult:
+    async def connect(self, credential: str | None = None) -> AIConnectResult:
+        del credential
         if self.failure:
             raise self.failure
         if self.connected:
@@ -467,109 +489,148 @@ class FakeAIProvider:
         self.closed = True
 
 
-class ClaudeCodeProvider:
-    """Official Claude Code CLI adapter with every built-in and MCP tool removed."""
+class CredentialStore(Protocol):
+    def get(self, name: str) -> str | None: ...
+    def set(self, name: str, value: str) -> None: ...
+    def delete(self, name: str) -> None: ...
+
+
+class SystemCredentialStore:
+    """OS credential-store adapter; OAuth tokens never enter app JSON settings."""
+
+    service = "com.reasonframe.subscription"
+
+    def __init__(self, data_dir: str | Path) -> None:
+        digest = sha256(str(Path(data_dir).resolve()).encode("utf-8")).hexdigest()[:16]
+        self.account = f"reasonframe-{digest}"
+
+    @staticmethod
+    def _keyring():
+        try:
+            import keyring
+        except ImportError as exc:
+            raise AIUnavailableError("The operating-system credential store is unavailable") from exc
+        return keyring
+
+    def get(self, name: str) -> str | None:
+        try:
+            return self._keyring().get_password(self.service, f"{self.account}:{name}")
+        except Exception as exc:
+            raise AIUnavailableError("The operating-system credential store is unavailable") from exc
+
+    def set(self, name: str, value: str) -> None:
+        try:
+            self._keyring().set_password(self.service, f"{self.account}:{name}", value)
+        except Exception as exc:
+            raise AIUnavailableError("The operating-system credential store is unavailable") from exc
+
+    def delete(self, name: str) -> None:
+        try:
+            self._keyring().delete_password(self.service, f"{self.account}:{name}")
+        except Exception as exc:
+            if exc.__class__.__name__ != "PasswordDeleteError":
+                raise AIUnavailableError("The operating-system credential store is unavailable") from exc
+
+
+class ClaudeAgentSDKProvider:
+    """Claude subscription adapter using the official Agent SDK and a setup token."""
 
     provider_id = "claude_code"
+    credential_name = "claude_setup_token"
 
     def __init__(
         self, data_dir: str | Path, *, timeout_seconds: float = 120.0,
-        execution: ProviderExecutionEnvironment | None = None,
+        credential_store: CredentialStore | None = None,
     ) -> None:
         self.data_dir = Path(data_dir)
         self.sandbox = self.data_dir / "ai-turns" / "claude"
-        self.sandbox.mkdir(parents=True, exist_ok=True, mode=0o700)
+        self.config_dir = self.data_dir / "claude-runtime"
+        for path in (self.sandbox, self.config_dir):
+            path.mkdir(parents=True, exist_ok=True, mode=0o700)
+            path.chmod(0o700)
         self.timeout_seconds = timeout_seconds
-        self.execution = execution or ProviderExecutionEnvironment()
-        self._login_process: subprocess.Popen[bytes] | None = None
+        self.credential_store = credential_store or SystemCredentialStore(self.data_dir)
 
-    def executable(self) -> Path | None:
-        return self.execution.resolve("claude")
+    async def _token(self) -> str | None:
+        return await asyncio.to_thread(self.credential_store.get, self.credential_name)
 
-    def installed(self) -> bool:
-        return self.executable() is not None
-
-    async def _run(self, *arguments: str, timeout: float = 15.0) -> tuple[int, str]:
-        executable = self.executable()
-        if executable is None:
-            raise AIUnavailableError("Claude Code is not installed on this computer")
-        process = await asyncio.create_subprocess_exec(
-            str(executable), *arguments,
-            cwd=self.sandbox,
-            env=self.execution.subprocess_env(),
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-        )
+    @staticmethod
+    def _bundled_cli_path() -> Path | None:
         try:
-            stdout, _stderr = await asyncio.wait_for(process.communicate(), timeout=timeout)
-        except (asyncio.TimeoutError, asyncio.CancelledError):
-            process.kill()
-            await process.wait()
-            raise
-        code = process.returncode or 0
-        logger.info("provider subprocess provider=claude_code exit_code=%d", code)
-        return code, stdout.decode("utf-8", errors="replace")
+            import claude_agent_sdk
+        except ImportError:
+            return None
+        executable = "claude.exe" if os.name == "nt" else "claude"
+        candidate = Path(claude_agent_sdk.__file__).resolve().parent / "_bundled" / executable
+        return candidate if candidate.is_file() else None
+
+    def _sdk_available(self) -> bool:
+        return self._bundled_cli_path() is not None
 
     async def status(self) -> AIProviderStatus:
-        if not self.installed():
+        if not self._sdk_available():
             return AIProviderStatus(
                 provider=self.provider_id, connected=False, installed=False,
                 state=AIProviderState.NOT_INSTALLED,
-                message="Claude Code is not installed on this computer.",
+                message="The bundled Claude Agent SDK runtime is unavailable.",
             )
         try:
-            code, output = await self._run("auth", "status", timeout=10)
-            payload = json.loads(output) if output.strip() else {}
-            connected = code == 0 and bool(payload.get("loggedIn", payload.get("authenticated", True)))
-        except (OSError, json.JSONDecodeError, asyncio.TimeoutError) as exc:
+            connected = bool(await self._token())
+        except AIProviderError as exc:
             logger.warning(
                 "provider status provider=claude_code state=RUNTIME_ERROR failure_category=%s",
                 type(exc).__name__,
             )
             return AIProviderStatus(
                 provider=self.provider_id, connected=False, state=AIProviderState.RUNTIME_ERROR,
-                message="Claude Code was found, but its sign-in status could not be verified.",
-            )
-        if code != 0 and not payload:
-            return AIProviderStatus(
-                provider=self.provider_id, connected=False, state=AIProviderState.RUNTIME_ERROR,
-                message="Claude Code was found, but its sign-in status could not be verified.",
+                message="Reasonframe could not access the system credential store.",
             )
         return AIProviderStatus(
             provider=self.provider_id, connected=connected,
             state=(AIProviderState.CONNECTED if connected else AIProviderState.SIGN_IN_REQUIRED),
             model="sonnet" if connected else None,
-            message="Claude Code is connected" if connected else "Claude Code is installed but not signed in.",
+            plan_type="subscription" if connected else None,
+            message=(
+                "Connected to a Claude subscription with an Agent SDK setup token."
+                if connected else
+                "Generate a setup token with `claude setup-token`, then paste it here."
+            ),
         )
 
     async def refresh_detection(self) -> AIProviderStatus:
-        self.execution.refresh()
         return await self.status()
 
-    async def connect(self) -> AIConnectResult:
+    async def connect(self, credential: str | None = None) -> AIConnectResult:
         status = await self.status()
         if status.connected:
             return AIConnectResult(provider=self.provider_id, connected=True)
         if not status.installed:
-            raise AIUnavailableError("Claude Code is not installed on this computer")
-        if self._login_process is None or self._login_process.poll() is not None:
-            executable = self.executable()
-            if executable is None:
-                raise AIUnavailableError("Claude Code is not installed on this computer")
-            self._login_process = subprocess.Popen(
-                [str(executable), "auth", "login"], cwd=self.sandbox,
-                env=self.execution.subprocess_env(),
-                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            raise AIUnavailableError("The Claude Agent SDK runtime is unavailable")
+        if credential is None:
+            return AIConnectResult(
+                provider=self.provider_id,
+                connection_method=AIConnectionMethod.SETUP_TOKEN,
+                credential_required=True,
+                message="Run `claude setup-token` locally and paste the resulting token.",
             )
-        return AIConnectResult(provider=self.provider_id, connected=False)
+        cleaned = credential.strip()
+        if not cleaned.startswith("sk-ant-oat") or len(cleaned) < 24:
+            raise AIDisconnectedError("Claude setup token is invalid")
+        await asyncio.to_thread(self.credential_store.set, self.credential_name, cleaned)
+        return AIConnectResult(
+            provider=self.provider_id,
+            connected=True,
+            connection_method=AIConnectionMethod.SETUP_TOKEN,
+            message="Claude subscription setup token saved in the system credential store.",
+        )
 
     async def disconnect(self) -> AIAccountStatus:
-        await self._run("auth", "logout", timeout=30)
+        await asyncio.to_thread(self.credential_store.delete, self.credential_name)
         return AIAccountStatus(provider=self.provider_id, connected=False)
 
     async def models(self) -> list[AIModel]:
         if not (await self.status()).connected:
-            raise AIDisconnectedError("Sign in to Claude Code before listing models")
+            raise AIDisconnectedError("Connect a Claude subscription before listing models")
         return [
             AIModel(id="sonnet", name="Claude Sonnet", is_default=True),
             AIModel(id="opus", name="Claude Opus"),
@@ -584,45 +645,77 @@ class ClaudeCodeProvider:
             else SUMMARY_DEVELOPER_INSTRUCTIONS if prompt.startswith("TASK: factual-summary")
             else PARSER_DEVELOPER_INSTRUCTIONS
         )
-        command = (
-            "--print", "--output-format", "json", "--json-schema", json.dumps(output_schema),
-            "--model", model or "sonnet", "--tools", "", "--disallowedTools", "mcp__*",
-            "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}',
-            "--no-session-persistence", "--permission-mode", "dontAsk",
-            "--system-prompt", instructions, prompt,
-        )
+        token = await self._token()
+        if not token:
+            raise AIDisconnectedError("Connect a Claude subscription before using AI")
+        cli_path = self._bundled_cli_path()
+        if cli_path is None:
+            raise AIUnavailableError("The bundled Claude Agent SDK runtime is unavailable")
+
+        async def execute() -> dict[str, object]:
+            from claude_agent_sdk import ClaudeAgentOptions, ResultMessage, query
+
+            result: ResultMessage | None = None
+            options = ClaudeAgentOptions(
+                tools=[],
+                allowed_tools=[],
+                system_prompt=instructions,
+                mcp_servers={},
+                strict_mcp_config=True,
+                permission_mode="dontAsk",
+                model=model or "sonnet",
+                cli_path=cli_path,
+                output_format={"type": "json_schema", "schema": output_schema},
+                cwd=self.sandbox,
+                setting_sources=[],
+                skills=[],
+                plugins=[],
+                extra_args={"no-session-persistence": None},
+                env={
+                    "CLAUDE_CODE_OAUTH_TOKEN": token,
+                    "CLAUDE_CONFIG_DIR": str(self.config_dir),
+                    "ANTHROPIC_API_KEY": "",
+                    "ANTHROPIC_AUTH_TOKEN": "",
+                },
+            )
+            async for message in query(prompt=prompt, options=options):
+                if isinstance(message, ResultMessage):
+                    result = message
+            if result is None or result.is_error:
+                raise AIUnavailableError("Claude Agent SDK could not complete this request")
+            if not isinstance(result.structured_output, dict):
+                raise AIUnavailableError("Claude Agent SDK returned malformed structured output")
+            return result.structured_output
+
         try:
-            code, output = await self._run(*command, timeout=self.timeout_seconds)
+            structured = await asyncio.wait_for(execute(), timeout=self.timeout_seconds)
         except asyncio.TimeoutError as exc:
-            raise AIUnavailableError("Claude Code request timed out") from exc
-        if code != 0:
-            raise AIUnavailableError("Claude Code could not complete this request")
-        try:
-            payload = json.loads(output)
-            structured = payload.get("structured_output")
-            if structured is None:
-                candidate = payload.get("result")
-                structured = json.loads(candidate) if isinstance(candidate, str) else candidate
-            if not isinstance(structured, dict):
-                raise ValueError("missing structured output")
-            return json.dumps(structured)
-        except (json.JSONDecodeError, ValueError, TypeError) as exc:
-            raise AIUnavailableError("Claude Code returned malformed structured output") from exc
+            raise AIUnavailableError("Claude Agent SDK request timed out") from exc
+        except AIProviderError:
+            raise
+        except Exception as exc:
+            message = str(exc).lower()
+            if any(term in message for term in ("usage limit", "rate limit", "quota", "429")):
+                raise AIUsageLimitError("Claude subscription usage limit reached") from exc
+            raise AIUnavailableError("Claude Agent SDK could not complete this request") from exc
+        return json.dumps(structured)
 
     async def close(self) -> None:
-        if self._login_process is not None and self._login_process.poll() is None:
-            self._login_process.terminate()
+        return None
 
 
 class ProviderManager:
     """Thin global-active-provider switch; prompts and validation stay shared."""
 
-    def __init__(self, data_dir: str | Path, settings) -> None:
+    def __init__(
+        self, data_dir: str | Path, settings,
+        *, credential_store: CredentialStore | None = None,
+    ) -> None:
         self.settings = settings
         self.execution = ProviderExecutionEnvironment()
         self.providers: dict[str, AIProvider] = {
             "chatgpt_codex": LazyCodexProvider(data_dir, execution=self.execution),
-            "claude_code": ClaudeCodeProvider(data_dir, execution=self.execution),
+            "claude_code": ClaudeAgentSDKProvider(data_dir, credential_store=credential_store),
         }
 
     @property
@@ -656,13 +749,12 @@ class ProviderManager:
                     message=(
                         "OpenAI Codex could not be initialized. Retry or open diagnostics."
                         if provider_id == "chatgpt_codex"
-                        else "Claude Code was found, but its sign-in status could not be verified."
+                        else "The Claude subscription runtime could not be initialized."
                     ),
                 ))
         return statuses
 
     async def refresh_provider_statuses(self) -> list[AIProviderStatus]:
-        self.execution.refresh()
         codex = self.providers["chatgpt_codex"]
         if isinstance(codex, LazyCodexProvider):
             await codex.refresh_detection()
@@ -671,8 +763,8 @@ class ProviderManager:
     async def status(self) -> AIAccountStatus:
         return await self.active.status()
 
-    async def connect(self) -> AIConnectResult:
-        return await self.active.connect()
+    async def connect(self, credential: str | None = None) -> AIConnectResult:
+        return await self.active.connect(credential)
 
     async def disconnect(self) -> AIAccountStatus:
         return await self.active.disconnect()

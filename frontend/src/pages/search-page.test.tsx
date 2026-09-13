@@ -70,7 +70,7 @@ describe("natural-language search workspace", () => {
   it("shows sanitized ChatGPT connection status and supports disconnect", async () => {
     const user = userEvent.setup()
     render(<MemoryRouter initialEntries={["/settings"]}><App/></MemoryRouter>)
-    expect(await screen.findByText("Connected with ChatGPT")).toBeInTheDocument()
+    expect(await screen.findByText("ChatGPT subscription is connected")).toBeInTheDocument()
     expect(await screen.findByRole("combobox", { name: "AI search model" })).toHaveTextContent("Test default")
     await user.click(screen.getByRole("button", { name: "Disconnect" }))
     await waitFor(() => expect(aiDisconnectMock).toHaveBeenCalledOnce())

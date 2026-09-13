@@ -32,6 +32,7 @@ from finance_terminal.ai_provider import (
     CodexSubscriptionProvider,
     FakeAIProvider,
     AIModel,
+    PARSER_DEVELOPER_INSTRUCTIONS,
     select_preferred_model,
 )
 from finance_terminal.api import create_app
@@ -291,7 +292,9 @@ def test_api_auth_and_ask_contracts_are_sanitized(phase3_store: SQLiteStore) -> 
         assert disconnected["state"] == "SIGN_IN_REQUIRED"
         assert "token" not in str(disconnected).lower()
         connect = client.post("/api/v1/ai/connect").json()
-        assert set(connect) == {"provider", "connected", "auth_url"}
+        assert set(connect) == {
+            "provider", "connected", "auth_url", "connection_method", "credential_required", "message",
+        }
         assert "token" not in str(connect).lower()
         run(provider.complete_login())
         connected = client.get("/api/v1/ai/status").json()
@@ -359,7 +362,7 @@ def test_real_adapter_uses_isolation_catalog_default_and_restricted_ephemeral_th
     assert status.connected is True
     assert status.state.value == "CONNECTED"
     assert captured.config.env["HOME"] == str(Path.home())
-    assert "CODEX_HOME" not in captured.config.env
+    assert captured.config.env["CODEX_HOME"] == str(provider.codex_home)
     assert captured.config.codex_bin == str(provider.executable)
     assert "features.shell_tool=false" in captured.config.config_overrides
     assert "features.unified_exec=false" in captured.config.config_overrides
@@ -377,6 +380,8 @@ def test_real_adapter_uses_isolation_catalog_default_and_restricted_ephemeral_th
     assert captured.thread["config"]["features"]["shell_tool"] is False
     assert captured.thread["config"]["features"]["unified_exec"] is False
     assert captured.thread["config"]["apps"]["_default"]["enabled"] is False
+    assert captured.thread["base_instructions"] == PARSER_DEVELOPER_INSTRUCTIONS
+    assert "developer_instructions" not in captured.thread
     assert captured.run[1]["output_schema"] == {"type": "object"}
     assert captured.run[1]["effort"] is None
     assert run(provider.generate_structured(

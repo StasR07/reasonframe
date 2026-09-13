@@ -5,10 +5,11 @@ import json
 import stat
 from datetime import date, timedelta
 from decimal import Decimal
+from threading import Barrier, BrokenBarrierError, Event
 
 from fastapi.testclient import TestClient
 
-from finance_terminal.ai_provider import ClaudeCodeProvider
+from finance_terminal.ai_provider import ClaudeAgentSDKProvider, FakeAIProvider, PARSER_DEVELOPER_INSTRUCTIONS
 from finance_terminal.api import create_app
 from finance_terminal.data_sync import DataSyncManager, default_sync_state
 from finance_terminal.market import (
@@ -130,19 +131,119 @@ def test_market_bootstrap_stops_on_429_and_resumes_only_pending_items(tmp_path) 
         store.close()
 
 
-def test_claude_adapter_invocation_removes_tools_mcp_and_session_persistence(tmp_path) -> None:
-    provider = ClaudeCodeProvider(tmp_path)
-    captured: list[str] = []
+def test_bootstrap_runs_independent_sources_in_parallel(tmp_path, monkeypatch) -> None:
+    paths = RuntimePaths.resolve(tmp_path / "app-data")
+    config = RuntimeConfig(paths)
+    store = SQLiteStore(paths.database)
+    manager = DataSyncManager(store, config)
+    rendezvous = Barrier(3)
+    simultaneous: list[str] = []
 
-    async def fake_run(*arguments: str, timeout: float):
-        del timeout
-        captured.extend(arguments)
-        return 0, json.dumps({"structured_output": {"answer": "ok"}})
+    def run_together(name: str) -> None:
+        try:
+            rendezvous.wait(timeout=2)
+        except BrokenBarrierError:
+            return
+        simultaneous.append(name)
 
-    provider._run = fake_run  # type: ignore[method-assign]
+    monkeypatch.setattr(manager, "_run_sec", lambda *_args, **_kwargs: run_together("sec"))
+    monkeypatch.setattr(manager, "_run_market", lambda *_args, **_kwargs: run_together("market"))
+    monkeypatch.setattr(manager, "_run_macro", lambda *_args, **_kwargs: run_together("macro"))
+    try:
+        manager.run_bootstrap()
+        assert set(simultaneous) == {"sec", "market", "macro"}
+    finally:
+        store.close()
+
+
+def test_bootstrap_endpoint_reports_busy_before_background_thread_starts(tmp_path, monkeypatch) -> None:
+    paths = RuntimePaths.resolve(tmp_path / "app-data")
+    config = RuntimeConfig(paths)
+    store = SQLiteStore(paths.database)
+    manager = DataSyncManager(store, config)
+    release = Event()
+
+    def blocked_bootstrap(*, _lock_reserved: bool = False, **_kwargs):
+        try:
+            release.wait(timeout=2)
+            return manager.state()
+        finally:
+            if _lock_reserved:
+                manager._run_lock.release()
+
+    monkeypatch.setattr(manager, "run_bootstrap", blocked_bootstrap)
+    try:
+        with TestClient(create_app(
+            store, provider=FakeAIProvider(), runtime_config=config, sync_manager=manager,
+        )) as client:
+            response = client.post("/api/v1/data/bootstrap")
+            assert response.status_code == 200
+            assert response.json()["busy"] is True
+            assert response.json()["operation"] == "BOOTSTRAP"
+            release.set()
+    finally:
+        release.set()
+        store.close()
+
+
+def test_reserved_refresh_returns_to_idle_when_no_sources_are_stale(tmp_path, monkeypatch) -> None:
+    paths = RuntimePaths.resolve(tmp_path / "app-data")
+    config = RuntimeConfig(paths)
+    store = SQLiteStore(paths.database)
+    manager = DataSyncManager(store, config)
+    monkeypatch.setattr(manager, "stale_sources", lambda: ())
+    try:
+        assert manager.reserve("REFRESH") is True
+        manager.run_refresh(_lock_reserved=True)
+        state = manager.state()
+        assert state["busy"] is False
+        assert state["operation"] == "IDLE"
+    finally:
+        store.close()
+
+
+def test_claude_agent_sdk_invocation_is_bounded_and_uses_only_app_prompt(tmp_path, monkeypatch) -> None:
+    import claude_agent_sdk
+    from claude_agent_sdk import ResultMessage
+
+    class Credentials:
+        def get(self, _name: str) -> str:
+            return "sk-ant-oat01-test-subscription-token"
+
+        def set(self, _name: str, _value: str) -> None:
+            pass
+
+        def delete(self, _name: str) -> None:
+            pass
+
+    provider = ClaudeAgentSDKProvider(tmp_path, credential_store=Credentials())
+    captured: dict[str, object] = {}
+
+    async def fake_query(*, prompt, options):
+        captured["prompt"] = prompt
+        captured["options"] = options
+        yield ResultMessage(
+            subtype="success", duration_ms=1, duration_api_ms=1, is_error=False,
+            num_turns=1, session_id="test", structured_output={"answer": "ok"},
+        )
+
+    monkeypatch.setattr(claude_agent_sdk, "query", fake_query)
     result = asyncio.run(provider.generate_structured("TASK: parser", {"type": "object"}))
     assert json.loads(result) == {"answer": "ok"}
-    assert captured[captured.index("--tools") + 1] == ""
-    assert captured[captured.index("--disallowedTools") + 1] == "mcp__*"
-    assert "--strict-mcp-config" in captured
-    assert "--no-session-persistence" in captured
+    options = captured["options"]
+    assert captured["prompt"] == "TASK: parser"
+    assert options.system_prompt == PARSER_DEVELOPER_INSTRUCTIONS
+    assert options.tools == []
+    assert options.allowed_tools == []
+    assert options.mcp_servers == {}
+    assert options.strict_mcp_config is True
+    assert options.setting_sources == []
+    assert options.skills == []
+    assert options.plugins == []
+    assert options.extra_args == {"no-session-persistence": None}
+    assert options.cli_path.name == "claude"
+    assert options.cli_path.parent.name == "_bundled"
+    assert options.output_format == {"type": "json_schema", "schema": {"type": "object"}}
+    assert options.env["CLAUDE_CODE_OAUTH_TOKEN"].startswith("sk-ant-oat")
+    assert options.env["CLAUDE_CONFIG_DIR"].endswith("claude-runtime")
+    assert options.env["ANTHROPIC_API_KEY"] == ""

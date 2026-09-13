@@ -9,8 +9,10 @@ description = "Reasonframe local-first financial research backend"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "claude-agent-sdk>=0.2.123,<0.3",
     "edgartools==5.53.0",
     "fastapi>=0.116,<1",
+    "keyring>=25,<26",
     "pydantic>=2.11,<3",
     "openai-codex==0.147.0",
     "python-dotenv>=1,<2",

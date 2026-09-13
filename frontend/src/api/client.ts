@@ -57,7 +57,10 @@ export const api = {
   refreshAIProviders: () => request<AIAccountStatus[]>("/api/v1/ai/providers/refresh", { method: "POST" }),
   verifyAIProvider: () => request<{ ok: boolean }>("/api/v1/ai/verify", { method: "POST" }),
   selectAIProvider: (provider: string) => request<AIAccountStatus>("/api/v1/ai/provider", { method: "PUT", body: JSON.stringify({ provider }) }),
-  aiConnect: () => request<AIConnectResult>("/api/v1/ai/connect", { method: "POST" }),
+  aiConnect: (credential?: string) => request<AIConnectResult>("/api/v1/ai/connect", {
+    method: "POST",
+    body: JSON.stringify(credential ? { credential } : {}),
+  }),
   aiDisconnect: () => request<AIAccountStatus>("/api/v1/ai/disconnect", { method: "POST" }),
   aiModels: () => request<AIModel[]>("/api/v1/ai/models"),
   runtime: () => request<RuntimeStatus>("/api/v1/runtime"),

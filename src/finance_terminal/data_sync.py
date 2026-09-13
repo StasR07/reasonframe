@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import copy
 import os
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta, timezone
-from threading import Lock
+from threading import Lock, RLock
 from typing import Any, Callable
 
 from .macro import FredProvider, MacroProvider
@@ -65,6 +66,7 @@ class DataSyncManager:
         self.sec_adapter_factory = sec_adapter_factory
         self.macro_provider_factory = macro_provider_factory
         self._run_lock = Lock()
+        self._state_lock = RLock()
         self.store.seed_certified_registry()
         self._reconcile_sec_checkpoint()
 
@@ -91,30 +93,47 @@ class DataSyncManager:
         self.state_store.write(state)
 
     def state(self) -> dict[str, Any]:
-        state = self.state_store.read()
-        defaults = default_sync_state()
-        state.setdefault("sources", {})
-        for name in SOURCE_NAMES:
-            state["sources"][name] = {**defaults["sources"][name], **state["sources"].get(name, {})}
-        state["busy"] = self._run_lock.locked()
-        return copy.deepcopy(state)
+        with self._state_lock:
+            state = self.state_store.read()
+            defaults = default_sync_state()
+            state.setdefault("sources", {})
+            for name in SOURCE_NAMES:
+                state["sources"][name] = {**defaults["sources"][name], **state["sources"].get(name, {})}
+            state["busy"] = self._run_lock.locked()
+            return copy.deepcopy(state)
 
     def _save(self, state: dict[str, Any]) -> None:
-        persisted = copy.deepcopy(state)
-        persisted.pop("busy", None)
-        self.state_store.write(persisted)
+        with self._state_lock:
+            persisted = copy.deepcopy(state)
+            persisted.pop("busy", None)
+            self.state_store.write(persisted)
 
     def _start_source(self, state: dict[str, Any], name: str, total: int) -> None:
-        source = state["sources"][name]
-        source.update(status="UPDATING", total=total, last_attempted_refresh=_now(), message=None)
-        self._save(state)
+        with self._state_lock:
+            source = state["sources"][name]
+            source.update(status="UPDATING", total=total, last_attempted_refresh=_now(), message=None)
+            self._save(state)
 
     def _finish_source(self, state: dict[str, Any], name: str, *, status: str, message: str) -> None:
-        source = state["sources"][name]
-        source.update(status=status, message=message)
-        if status == "UP_TO_DATE":
-            source["last_successful_refresh"] = _now()
-        self._save(state)
+        with self._state_lock:
+            source = state["sources"][name]
+            source.update(status=status, message=message)
+            if status == "UP_TO_DATE":
+                source["last_successful_refresh"] = _now()
+            self._save(state)
+
+    def reserve(self, operation: str) -> bool:
+        """Reserve the coordinator before scheduling work so status is immediately busy."""
+        if not self._run_lock.acquire(blocking=False):
+            return False
+        try:
+            state = self.state()
+            state["operation"] = operation
+            self._save(state)
+        except Exception:
+            self._run_lock.release()
+            raise
+        return True
 
     def _certified_tickers(self) -> list[str]:
         return [company.ticker for company in self.store.companies()]
@@ -126,20 +145,36 @@ class DataSyncManager:
         sec_adapter: EdgarAdapter | None = None,
         market_provider: MarketDataProvider | None = None,
         macro_provider: MacroProvider | None = None,
+        _lock_reserved: bool = False,
     ) -> dict[str, Any]:
-        if not self._run_lock.acquire(blocking=False):
+        if not _lock_reserved and not self._run_lock.acquire(blocking=False):
             return self.state()
         try:
             state = self.state()
             state["operation"] = "BOOTSTRAP"
             self._save(state)
             tickers = self._certified_tickers()
+            operations: list[Callable[[], None]] = []
             if "sec" in sources:
-                self._run_safely(state, "sec", lambda: self._run_sec(state, tickers, sec_adapter))
+                operations.append(
+                    lambda: self._run_safely(state, "sec", lambda: self._run_sec(state, tickers, sec_adapter))
+                )
             if "market" in sources:
-                self._run_safely(state, "market", lambda: self._run_market(state, tickers, market_provider, full=True))
+                operations.append(
+                    lambda: self._run_safely(
+                        state, "market", lambda: self._run_market(state, tickers, market_provider, full=True)
+                    )
+                )
             if "macro" in sources:
-                self._run_safely(state, "macro", lambda: self._run_macro(state, macro_provider))
+                operations.append(
+                    lambda: self._run_safely(state, "macro", lambda: self._run_macro(state, macro_provider))
+                )
+            if operations:
+                with ThreadPoolExecutor(
+                    max_workers=len(operations), thread_name_prefix="reasonframe-bootstrap"
+                ) as executor:
+                    for future in [executor.submit(operation) for operation in operations]:
+                        future.result()
             source_states = [state["sources"][name]["status"] for name in SOURCE_NAMES]
             state["onboarding_ready"] = any(
                 self.store.table_row_count(table) > 0
@@ -168,7 +203,9 @@ class DataSyncManager:
         completed_tickers = set(source.get("completed_items", []))
         pending = [ticker for ticker in tickers if ticker not in completed_tickers]
         self._start_source(state, "sec", len(tickers))
-        source["completed"] = len(completed_tickers)
+        with self._state_lock:
+            source["completed"] = len(completed_tickers)
+            self._save(state)
         identity = self.config.edgar_identity()
         if adapter is None and not identity:
             self._finish_source(
@@ -183,12 +220,13 @@ class DataSyncManager:
         for ticker in pending:
             outcome = refresh_sec(self.store, [ticker], adapter=adapter).get(ticker, "FAILED")
             if outcome.startswith(("COMPLETED", "PARTIAL")):
-                completed_tickers.add(ticker)
-                source["completed_items"] = sorted(completed_tickers)
-                source["completed"] = len(completed_tickers)
+                with self._state_lock:
+                    completed_tickers.add(ticker)
+                    source["completed_items"] = sorted(completed_tickers)
+                    source["completed"] = len(completed_tickers)
+                    self._save(state)
             else:
                 failures += 1
-            self._save(state)
         status = "UP_TO_DATE" if not failures and len(completed_tickers) == len(tickers) else "PARTIALLY_READY"
         self._finish_source(state, "sec", status=status, message=f"{len(completed_tickers)} of {len(tickers)} companies ready")
 
@@ -199,9 +237,12 @@ class DataSyncManager:
         completed_tickers = set(source.get("completed_items", [])) if full else set()
         pending = [ticker for ticker in tickers if ticker not in completed_tickers]
         processed_tickers: set[str] = set()
-        state["market_pending"] = pending
+        with self._state_lock:
+            state["market_pending"] = pending
         self._start_source(state, "market", len(tickers))
-        source["completed"] = len(completed_tickers)
+        with self._state_lock:
+            source["completed"] = len(completed_tickers)
+            self._save(state)
         token = self.config.get_secret("tiingo_token", environment_fallback="TIINGO_API_TOKEN")
         if provider is None and not token:
             self._finish_source(state, "market", status="NOT_CONFIGURED", message="Add a Tiingo token to continue.")
@@ -218,35 +259,39 @@ class DataSyncManager:
                 while target.weekday() >= 5:
                     target -= timedelta(days=1)
                 if existing and existing[-1].trading_date >= target:
-                    processed_tickers.add(ticker)
-                    source["completed"] += 1
-                    state["market_pending"] = [item for item in pending if item not in processed_tickers]
-                    self._save(state)
+                    with self._state_lock:
+                        processed_tickers.add(ticker)
+                        source["completed"] += 1
+                        state["market_pending"] = [item for item in pending if item not in processed_tickers]
+                        self._save(state)
                     continue
             outcome = refresh_market(
                 self.store, [ticker], provider=provider, full=full, start_date=start_date
             ).get(ticker, "FAILED")
             if "[rate_limited]" in outcome.casefold():
-                done = completed_tickers if full else processed_tickers
-                state["market_pending"] = [item for item in pending if item not in done]
-                self._finish_source(
-                    state, "market", status="RATE_LIMITED",
-                    message=f"Market data setup paused. {source['completed']} of {len(tickers)} companies are ready. Tiingo's hourly request limit was reached.",
-                )
+                with self._state_lock:
+                    done = completed_tickers if full else processed_tickers
+                    state["market_pending"] = [item for item in pending if item not in done]
+                    self._finish_source(
+                        state, "market", status="RATE_LIMITED",
+                        message=f"Market data setup paused. {source['completed']} of {len(tickers)} companies are ready. Tiingo's hourly request limit was reached.",
+                    )
                 return
             if outcome.startswith("COMPLETED"):
-                processed_tickers.add(ticker)
-                if full:
-                    completed_tickers.add(ticker)
-                    source["completed_items"] = sorted(completed_tickers)
-                    source["completed"] = len(completed_tickers)
-                else:
-                    source["completed"] += 1
+                with self._state_lock:
+                    processed_tickers.add(ticker)
+                    if full:
+                        completed_tickers.add(ticker)
+                        source["completed_items"] = sorted(completed_tickers)
+                        source["completed"] = len(completed_tickers)
+                    else:
+                        source["completed"] += 1
             else:
                 failures += 1
-            done = completed_tickers if full else processed_tickers
-            state["market_pending"] = [item for item in pending if item not in done]
-            self._save(state)
+            with self._state_lock:
+                done = completed_tickers if full else processed_tickers
+                state["market_pending"] = [item for item in pending if item not in done]
+                self._save(state)
         status = "UP_TO_DATE" if not failures else "PARTIALLY_READY"
         self._finish_source(state, "market", status=status, message=f"{source['completed']} of {len(tickers)} companies ready")
 
@@ -261,7 +306,9 @@ class DataSyncManager:
         outcomes = refresh_macro(self.store, provider=provider)
         successes = sum(value.startswith("COMPLETED") for value in outcomes.values())
         source = state["sources"]["macro"]
-        source["completed"] = successes
+        with self._state_lock:
+            source["completed"] = successes
+            self._save(state)
         status = "UP_TO_DATE" if successes == len(outcomes) else "PARTIALLY_READY"
         self._finish_source(state, "macro", status=status, message=f"{successes} of {len(outcomes)} series ready")
 
@@ -295,15 +342,21 @@ class DataSyncManager:
             stale.append("market")
         return tuple(stale)
 
-    def run_refresh(self, *, automatic: bool = False) -> dict[str, Any]:
-        if automatic and not bool(self.config.settings.read().get("automatic_refresh", True)):
-            return self.state()
-        sources = self.stale_sources()
-        if not sources:
-            return self.state()
-        if not self._run_lock.acquire(blocking=False):
+    def run_refresh(self, *, automatic: bool = False, _lock_reserved: bool = False) -> dict[str, Any]:
+        if not _lock_reserved and not self._run_lock.acquire(blocking=False):
             return self.state()
         try:
+            if automatic and not bool(self.config.settings.read().get("automatic_refresh", True)):
+                state = self.state()
+                state["operation"] = "IDLE"
+                self._save(state)
+                return self.state()
+            sources = self.stale_sources()
+            if not sources:
+                state = self.state()
+                state["operation"] = "IDLE"
+                self._save(state)
+                return self.state()
             state = self.state()
             state["operation"] = "REFRESH"
             self._save(state)

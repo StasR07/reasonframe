@@ -54,6 +54,7 @@ export function ChatGPTConnection() {
   const [selectedModel, setSelectedModel] = useState("")
   const [busy, setBusy] = useState(false)
   const [loginPending, setLoginPending] = useState(false)
+  const [setupToken, setSetupToken] = useState("")
   const [connectionMessage, setConnectionMessage] = useState<"service" | "timeout" | null>(null)
   const poll = useRef<number | null>(null)
   const pollAttempts = useRef(0)
@@ -85,9 +86,11 @@ export function ChatGPTConnection() {
   const connect = async () => {
     setBusy(true)
     try {
-      const result = await api.aiConnect()
+      const credential = status?.provider === "claude_code" ? setupToken.trim() : undefined
+      const result = await api.aiConnect(credential)
       if (result.auth_url) await openExternalUrl(result.auth_url)
-      if (result.connected) await refresh()
+      if (result.connected) { setSetupToken(""); await refresh() }
+      else if (result.credential_required) return
       else if (poll.current === null) {
         setLoginPending(true)
         pollAttempts.current = 0
@@ -105,11 +108,11 @@ export function ChatGPTConnection() {
   }
   const disconnect = async () => {
     setBusy(true)
-    try { setStatus(await api.aiDisconnect()); setLoginPending(false); setConnectionMessage(null) }
+    try { setStatus(await api.aiDisconnect()); setLoginPending(false); setSetupToken(""); setConnectionMessage(null) }
     catch { setConnectionMessage("service") }
     finally { setBusy(false) }
   }
-  const retryDetection = async () => {
+  const retryStatus = async () => {
     setBusy(true); setConnectionMessage(null)
     try {
       const detected = await api.refreshAIProviders()
@@ -119,24 +122,24 @@ export function ChatGPTConnection() {
     } catch { setConnectionMessage("service") }
     finally { setBusy(false) }
   }
-  const providerName = status?.provider === "claude_code" ? "Claude Code" : "OpenAI Codex"
+  const providerName = status?.provider === "claude_code" ? "Claude subscription" : "ChatGPT subscription"
   const selectProvider = async (value: string | null) => {
     if (!value) return
     setBusy(true); setConnectionMessage(null)
-    try { setStatus(await api.selectAIProvider(value)); setModels([]); setSelectedModel("") }
+    try { setStatus(await api.selectAIProvider(value)); setModels([]); setSelectedModel(""); setSetupToken("") }
     catch { setConnectionMessage("service") }
     finally { setBusy(false) }
   }
-  const selector = providers.length > 0 && <div className="mb-3"><label className="mb-1 block text-xs" htmlFor="ai-provider">AI provider</label><Select value={status?.provider ?? "chatgpt_codex"} onValueChange={selectProvider}><SelectTrigger id="ai-provider" className="w-full" aria-label="AI provider"><SelectValue>{providerName}</SelectValue></SelectTrigger><SelectContent>{providers.map((item) => <SelectItem key={item.provider} value={item.provider}>{item.provider === "chatgpt_codex" ? "OpenAI Codex" : "Claude Code"}</SelectItem>)}</SelectContent></Select></div>
-  if (status?.connected) return <div className="rounded-lg border bg-muted/40 p-3">{selector}<p className="text-xs font-medium text-foreground">{status.provider === "chatgpt_codex" ? "Connected with ChatGPT" : `${providerName} is connected`}</p>{models.length > 0 && <div className="mt-2"><label className="mb-1 block text-[11px]" htmlFor="ai-search-model">Model</label><Select value={selectedModel} onValueChange={(value) => { if (value) { setSelectedModel(value); persistAIModel(value) } }}><SelectTrigger id="ai-search-model" size="sm" className="w-full" aria-label="AI search model"><SelectValue>{models.find((model) => model.id === selectedModel)?.name}</SelectValue></SelectTrigger><SelectContent>{models.map((model) => <SelectItem key={model.id} value={model.id}>{model.name}</SelectItem>)}</SelectContent></Select></div>}{connectionMessage === "service" && <p className="mt-1 text-[11px]">Model list is currently unavailable.</p>}<div className="mt-2 flex flex-wrap gap-2"><Button className="h-7 px-2 text-xs" variant="outline" onClick={retryDetection} disabled={busy}><RefreshCw className="size-3"/>Retry detection</Button><Button className="h-7 px-2 text-xs" variant="ghost" onClick={disconnect} disabled={busy}><LogOut className="size-3"/>Disconnect</Button></div></div>
+  const selector = providers.length > 0 && <div className="mb-3"><label className="mb-1 block text-xs" htmlFor="ai-provider">AI provider</label><Select value={status?.provider ?? "chatgpt_codex"} onValueChange={selectProvider}><SelectTrigger id="ai-provider" className="w-full" aria-label="AI provider"><SelectValue>{providerName}</SelectValue></SelectTrigger><SelectContent>{providers.map((item) => <SelectItem key={item.provider} value={item.provider}>{item.provider === "chatgpt_codex" ? "ChatGPT subscription" : "Claude subscription"}</SelectItem>)}</SelectContent></Select></div>
+  if (status?.connected) return <div className="rounded-lg border bg-muted/40 p-3">{selector}<p className="text-xs font-medium text-foreground">{providerName} is connected</p>{models.length > 0 && <div className="mt-2"><label className="mb-1 block text-[11px]" htmlFor="ai-search-model">Model</label><Select value={selectedModel} onValueChange={(value) => { if (value) { setSelectedModel(value); persistAIModel(value) } }}><SelectTrigger id="ai-search-model" size="sm" className="w-full" aria-label="AI search model"><SelectValue>{models.find((model) => model.id === selectedModel)?.name}</SelectValue></SelectTrigger><SelectContent>{models.map((model) => <SelectItem key={model.id} value={model.id}>{model.name}</SelectItem>)}</SelectContent></Select></div>}{connectionMessage === "service" && <p className="mt-1 text-[11px]">Model list is currently unavailable.</p>}<div className="mt-2"><Button className="h-7 px-2 text-xs" variant="ghost" onClick={disconnect} disabled={busy}><LogOut className="size-3"/>Disconnect</Button></div></div>
   const missing = status?.state === "NOT_INSTALLED"
   const authError = status?.state === "RUNTIME_ERROR"
   const unsupported = status?.state === "UNSUPPORTED" || status?.supported === false
   const title = missing ? `${providerName} could not be found on this Mac` : authError ? `${providerName} could not be initialized` : unsupported ? `${providerName} is not supported yet` : status?.provider === "chatgpt_codex" ? "Not connected" : `Sign in to ${providerName}`
   const guidance = missing
-    ? (status?.provider === "claude_code" ? "Install the official Claude Code CLI, then retry detection." : "Reinstall the latest desktop build, then retry detection.")
+    ? "Reinstall the latest desktop build, then try again."
     : status?.message
-  return <div className="rounded-lg border bg-muted/40 p-3">{selector}<p className="text-xs font-medium text-foreground">{title}</p>{guidance && <p className="mt-1 text-[11px]">{guidance}</p>}{connectionMessage && <p className="mt-1 text-[11px]">{connectionMessageText(connectionMessage)}</p>}<div className="mt-2 flex flex-wrap gap-2">{!missing && !authError && !unsupported && <Button className="h-7 px-2 text-xs" variant="outline" onClick={connect} disabled={busy || loginPending}>{loginPending ? "Waiting for sign-in…" : busy ? "Starting sign in..." : status?.provider === "chatgpt_codex" ? "Sign in with ChatGPT" : "Sign in"}</Button>}<Button className="h-7 px-2 text-xs" variant="ghost" onClick={retryDetection} disabled={busy || loginPending}><RefreshCw className="size-3"/>Retry detection</Button></div></div>
+  return <div className="rounded-lg border bg-muted/40 p-3">{selector}<p className="text-xs font-medium text-foreground">{title}</p>{guidance && <p className="mt-1 text-[11px]">{guidance}</p>}{status?.provider === "claude_code" && !missing && !authError && !unsupported && <label className="mt-2 block text-[11px]">Claude setup token<input type="password" autoComplete="off" value={setupToken} onChange={(event) => setSetupToken(event.target.value)} className="mt-1 h-8 w-full rounded-md border bg-background px-2 text-xs" placeholder="sk-ant-oat…"/></label>}{connectionMessage && <p className="mt-1 text-[11px]">{connectionMessageText(connectionMessage)}</p>}<div className="mt-2 flex flex-wrap gap-2">{!missing && !authError && !unsupported && <Button className="h-7 px-2 text-xs" variant="outline" onClick={connect} disabled={busy || loginPending || (status?.provider === "claude_code" && !setupToken.trim())}>{loginPending ? "Waiting for sign-in…" : busy ? "Starting sign in..." : status?.provider === "chatgpt_codex" ? "Sign in with ChatGPT" : "Connect Claude"}</Button>}{(missing || authError) && <Button className="h-7 px-2 text-xs" variant="ghost" onClick={retryStatus} disabled={busy || loginPending}><RefreshCw className="size-3"/>Try again</Button>}</div></div>
 }
 
 export function AppShell() {

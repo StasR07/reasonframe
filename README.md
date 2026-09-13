@@ -73,7 +73,7 @@ Reasonframe currently combines:
 - **Tiingo** — end-of-day market history, splits, and dividends using a user-supplied API token.
 - **FRED** — a curated set of macroeconomic series with access included in the v0.1.0 release.
 
-Tiingo users must supply their own token. See the [Tiingo API documentation](https://www.tiingo.com/documentation/general) and [API token page](https://api.tiingo.com/account/api/token).
+Tiingo users must supply their own token. Create or sign in to a [Tiingo account](https://api.tiingo.com), open the [API token page](https://api.tiingo.com/account/api/token), copy the token, and paste it into Reasonframe during onboarding. Reasonframe validates it before saving it in the app's owner-only local data directory. Treat the token like a password and do not publish it. Tiingo offers free accounts and paid plans with different usage limits; see the [official API documentation](https://www.tiingo.com/documentation/general) for current details.
 
 The packaged v0.1.0 application includes its FRED access and SEC fair-access identity. Only release maintainers need to configure those values when producing a desktop build.
 
@@ -91,17 +91,21 @@ The strongest packaged support today is **macOS on Apple Silicon (ARM64)**.
 
 1. Download the latest Reasonframe DMG from the repository's **Releases** page.
 2. Install and open `Reasonframe.app`.
-3. Add a Tiingo API token. Create a free Tiingo account if needed, then copy your token from the Tiingo API token page and paste it into Settings → Market Data. FRED and SEC access are included.
+3. Create or sign in to [Tiingo](https://api.tiingo.com), copy your token from the [API token page](https://api.tiingo.com/account/api/token), and paste it into onboarding. FRED and SEC access are included.
 4. Connect a supported AI provider if you want to use analyst workflows.
 5. Allow the initial local data setup to complete.
 
-The data bootstrap is resumable, and subsequent refreshes can run automatically or manually from Settings.
+Once the initialization request is accepted, its button is disabled and live source progress is shown. SEC, Tiingo, and FRED load concurrently, so one slower source does not prevent the others from progressing. Each completed unit is checkpointed: initialization can be resumed after closing the app, and a Tiingo rate-limit pause can be continued after the account's request window resets. Subsequent refreshes can run automatically or manually from Settings.
 
 ### AI providers
 
-**OpenAI Codex** is the primary integration. Reasonframe supports browser-based ChatGPT authentication through its bundled Codex runtime, so a globally installed `codex` command is not required. See OpenAI's [Codex sign-in documentation](https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan).
+**ChatGPT subscription** is the primary integration. Reasonframe uses OpenAI's documented browser login through its bundled Codex SDK runtime: click sign in, finish in the browser, and the local callback connects the app automatically. No API key, security-setting change, one-time device code, or globally installed `codex` command is required. See OpenAI's [authentication](https://learn.chatgpt.com/docs/auth) and [app-server](https://learn.chatgpt.com/docs/app-server) documentation.
 
-**Claude Code** is also supported through Reasonframe's isolated, tool-disabled analyst path. Provider authentication and account requirements remain subject to Anthropic's own Claude Code setup and terms.
+**Claude subscription** is supported through the official Claude Agent SDK. Sign in through Claude Code, run `claude setup-token`, and paste the resulting `sk-ant-oat…` token into Reasonframe's masked field. This is a one-time setup unless the token is revoked or disconnected; Reasonframe keeps it in the operating-system credential store. The SDK's bundled runtime receives a custom system prompt and no tools, MCP servers, settings sources, plugins, or skills. See Anthropic's [subscription guidance](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan) and [Agent SDK documentation](https://code.claude.com/docs/en/agent-sdk/python).
+
+Anthropic does not currently document an embeddable Claude.ai subscription browser-login callback for the Agent SDK. Claude Code's browser login belongs to the interactive CLI, while `ant auth login` uses Console/API billing, so Reasonframe deliberately retains the one-time inference-only setup-token step.
+
+Both integrations use provider-owned SDK runtimes internally. They do not make raw public API calls with consumer-subscription OAuth credentials. A provider-status **Try again** action appears only when a bundled runtime could not initialize or status could not be loaded; connected providers no longer need a separate CLI-detection retry. See the [feasibility report](docs/ai-provider-feasibility.md) for the exact boundary.
 
 ## Architecture
 

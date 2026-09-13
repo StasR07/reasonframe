@@ -74,6 +74,9 @@ export interface AIConnectResult {
   provider: "chatgpt_codex" | "claude_code"
   connected: boolean
   auth_url: string | null
+  connection_method: "BROWSER_REDIRECT" | "SETUP_TOKEN" | null
+  credential_required: boolean
+  message: string | null
 }
 
 export type DataSourceState = "NOT_STARTED" | "NOT_CONFIGURED" | "UPDATING" | "UP_TO_DATE" | "PARTIALLY_READY" | "RATE_LIMITED" | "OFFLINE" | "FAILED"
