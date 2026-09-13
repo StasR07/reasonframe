@@ -106,7 +106,7 @@ def create_app(
             if owns_database:
                 database.close()
 
-    app = FastAPI(title="Reasonframe", version="0.1.0-rc.1", lifespan=lifespan)
+    app = FastAPI(title="Reasonframe", version="0.1.0-rc.2", lifespan=lifespan)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["tauri://localhost", "http://tauri.localhost"],

@@ -39,7 +39,7 @@ it("groups appearance, AI, data, and About settings with an explicit Theme label
   expect(screen.getByText("Tiingo")).toBeInTheDocument()
   expect(await screen.findAllByText("Included with this release")).toHaveLength(2)
   expect(screen.getByText("Financial research with specialist AI analysts.")).toBeInTheDocument()
-  expect(screen.getByText("Version 0.1.0-rc.1")).toBeInTheDocument()
+  expect(screen.getByText("Version 0.1.0-rc.2")).toBeInTheDocument()
   expect(screen.getByText(/Reasonframe combines company fundamentals/)).toBeInTheDocument()
   expect(screen.getByText(/Reasonframe does not provide investment advice/)).toBeInTheDocument()
 })

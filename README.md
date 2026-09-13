@@ -144,7 +144,7 @@ Reasonframe is deliberately a local desktop project rather than a hosted multi-u
 
 ## Project status
 
-Reasonframe is an independent project. The current pre-release is **v0.1.0-rc.1**: a release candidate focused on a polished macOS desktop experience, a deliberately bounded company universe, and transparent research workflows.
+Reasonframe is an independent project. The current pre-release is **v0.1.0-rc.2**: a release candidate focused on a polished macOS desktop experience, a deliberately bounded company universe, and transparent research workflows.
 
 The project is not intended to replace institutional market-data platforms or professional investment judgment.
 
