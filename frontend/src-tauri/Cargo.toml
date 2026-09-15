@@ -1,6 +1,6 @@
 [package]
 name = "reasonframe"
-version = "0.1.0-rc.2"
+version = "0.1.0"
 description = "Reasonframe desktop application shell"
 edition = "2021"
 

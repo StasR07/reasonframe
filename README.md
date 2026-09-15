@@ -69,13 +69,11 @@ The local-first model is intentional: the application can own its financial calc
 
 Reasonframe currently combines:
 
-- **SEC filings** — company fundamentals normalized from SEC/XBRL data using the fair-access identity included with the v0.1.0 release.
+- **SEC filings** — company fundamentals normalized from SEC/XBRL data using your fair-access identity.
 - **Tiingo** — end-of-day market history, splits, and dividends using a user-supplied API token.
-- **FRED** — a curated set of macroeconomic series with access included in the v0.1.0 release.
+- **FRED** — a curated set of macroeconomic series using a user-supplied API key.
 
-Tiingo users must supply their own token. Create or sign in to a [Tiingo account](https://api.tiingo.com), open the [API token page](https://api.tiingo.com/account/api/token), copy the token, and paste it into Reasonframe during onboarding. Reasonframe validates it before saving it in the app's owner-only local data directory. Treat the token like a password and do not publish it. Tiingo offers free accounts and paid plans with different usage limits; see the [official API documentation](https://www.tiingo.com/documentation/general) for current details.
-
-The packaged v0.1.0 application includes its FRED access and SEC fair-access identity. Only release maintainers need to configure those values when producing a desktop build.
+Reasonframe does not ship data-source credentials. Each user supplies their own values during onboarding, and the app stores them in its owner-only local application-data directory. Treat API keys and tokens like passwords and never commit or publish them.
 
 ## Certified company universe
 
@@ -90,10 +88,16 @@ Certification is a quality boundary: incomplete or poorly normalized company dat
 The strongest packaged support today is **macOS on Apple Silicon (ARM64)**.
 
 1. Download the latest Reasonframe DMG from the repository's **Releases** page.
-2. Install and open `Reasonframe.app`.
-3. Create or sign in to [Tiingo](https://api.tiingo.com), copy your token from the [API token page](https://api.tiingo.com/account/api/token), and paste it into onboarding. FRED and SEC access are included.
-4. Connect a supported AI provider if you want to use analyst workflows.
-5. Allow the initial local data setup to complete.
+2. Open the DMG and drag `Reasonframe.app` into `Applications`, then launch it.
+3. Gather your data-source credentials:
+   - **Tiingo:** create or sign in to a [Tiingo account](https://api.tiingo.com), then copy your token from the [API token page](https://api.tiingo.com/account/api/token).
+   - **FRED:** sign in or create a FRED account, then [request or view an API key](https://fred.stlouisfed.org/docs/api/api_key.html).
+   - **SEC:** enter a fair-access identity in the form `Your Name you@example.com`. This is not an API key; it identifies automated EDGAR requests as required by the [SEC developer guidance](https://www.sec.gov/about/developer-resources).
+4. Paste those three values into Reasonframe's onboarding screen. The Tiingo token is validated before it is saved.
+5. Connect a supported AI provider if you want to use analyst workflows.
+6. Allow the initial local data setup to complete.
+
+The application stores settings, credentials, logs, and downloaded research data under `~/Library/Application Support/Stas Finance Terminal/`. Data-source credentials are not embedded in the application or DMG.
 
 Once the initialization request is accepted, its button is disabled and live source progress is shown. SEC, Tiingo, and FRED load concurrently, so one slower source does not prevent the others from progressing. Each completed unit is checkpointed: initialization can be resumed after closing the app, and a Tiingo rate-limit pause can be continued after the account's request window resets. Subsequent refreshes can run automatically or manually from Settings.
 
@@ -135,8 +139,7 @@ Reasonframe is deliberately a local desktop project rather than a hosted multi-u
 ## Current limitations
 
 - Packaged release support is currently strongest on **macOS Apple Silicon (ARM64)**.
-- Market data requires a user-supplied **Tiingo API token**.
-- FRED access and the SEC fair-access identity are included with the **v0.1.0 packaged release**.
+- Data access requires a user-supplied **Tiingo API token**, **FRED API key**, and **SEC fair-access identity**.
 - Tiingo market data is downloaded locally and is **not redistributed** with Reasonframe.
 - The normal product universe is limited to companies that pass Reasonframe's certification checks.
 - Apple notarization may still be pending for early release artifacts.
@@ -144,49 +147,62 @@ Reasonframe is deliberately a local desktop project rather than a hosted multi-u
 
 ## Project status
 
-Reasonframe is an independent project. The current pre-release is **v0.1.0-rc.2**: a release candidate focused on a polished macOS desktop experience, a deliberately bounded company universe, and transparent research workflows.
+Reasonframe is an independent project. The current release is **v0.1.0**, focused on a polished macOS desktop experience, a deliberately bounded company universe, and transparent research workflows.
 
 The project is not intended to replace institutional market-data platforms or professional investment judgment.
 
 ## Development
 
-Python 3.12, Node.js/npm, Rust, Tauri's macOS prerequisites, and `uv` are required for the full desktop build.
+Python 3.12, Node.js/npm, Rust, Tauri's macOS prerequisites, and [`uv`](https://docs.astral.sh/uv/getting-started/installation/) are required for the full desktop build.
 
 ```bash
-python3.12 -m venv .venv
-.venv/bin/pip install -e '.[test]'
-cd frontend && npm install
+git clone https://github.com/StasR07/reasonframe.git
+cd reasonframe
+uv sync --extra test
+npm --prefix frontend ci
 ```
 
-Copy `.env.example` to `.env` and provide development-only data-source credentials. Run the backend and frontend in separate terminals:
+Copy `.env.example` to `.env` and provide your own development credentials:
+
+```bash
+cp .env.example .env
+```
+
+Set `EDGAR_IDENTITY`, `FRED_API_KEY`, and `TIINGO_API_TOKEN`. The `.env` file is gitignored. For desktop use, you can instead enter the same values in onboarding or Settings; they are stored locally and are not added to the build artifact.
+
+Run the backend and frontend in separate terminals from the repository root:
 
 ```bash
 .venv/bin/uvicorn finance_terminal.api:app --host 127.0.0.1 --port 8000
-cd frontend && npm run dev
+npm --prefix frontend run dev
 ```
 
 Run the routine checks:
 
 ```bash
 .venv/bin/python -m pytest -m 'not live'
-cd frontend && npm test
-cd frontend && npm run lint
-cd frontend && npm run build
+npm --prefix frontend test
+npm --prefix frontend run lint
+npm --prefix frontend run build
 ```
 
 Build the macOS sidecar and desktop package:
 
 ```bash
 scripts/build-macos-sidecar.sh
-cd frontend && npm run desktop:build
+npm --prefix frontend run desktop:build
 ```
 
 Build outputs are generated under `frontend/src-tauri/target/release/bundle/` and should be attached to a GitHub Release rather than committed to source control.
+
+No SEC identity, FRED key, or Tiingo token is required to compile a release. The desktop build intentionally bundles no data-source credentials.
+
+## License
+
+Reasonframe is open-source software licensed under the [MIT License](LICENSE). Third-party components remain subject to the licenses listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Data, trademarks, and disclaimer
 
 Reasonframe is an independent project and is not affiliated with or endorsed by the U.S. Securities and Exchange Commission, the Federal Reserve Bank of St. Louis, Tiingo, OpenAI, or Anthropic. Product and company names belong to their respective owners.
 
 Financial information can be incomplete, delayed, restated, or interpreted differently across sources. Reasonframe is a research tool, not an investment adviser, and its outputs are not investment advice.
-
-<!-- Before public release: add the chosen LICENSE file and, if desired, a short License section here. -->

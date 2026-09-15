@@ -26,15 +26,6 @@ fn sidecar_path(app: &tauri::AppHandle) -> Option<PathBuf> {
         .filter(|path| path.exists())
 }
 
-fn bundled_text_resource(app: &tauri::AppHandle, name: &str) -> Option<String> {
-    let root = app.path().resource_dir().ok()?;
-    [root.join("resources").join(name), root.join(name)]
-        .into_iter()
-        .find_map(|path| std::fs::read_to_string(path).ok())
-        .map(|value| value.trim().to_string())
-        .filter(|value| !value.is_empty())
-}
-
 #[cfg(debug_assertions)]
 fn development_backend_command() -> Result<Command, String> {
     let repository = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -79,12 +70,6 @@ fn start_backend(app: &tauri::AppHandle, port: u16, data_dir: &std::path::Path) 
     command.env("PATH", path_entries.join(":"));
     if !home.is_empty() {
         command.env("HOME", home);
-    }
-    if let Some(value) = bundled_text_resource(app, "fred-api-key") {
-        command.env("FRED_API_KEY", value);
-    }
-    if let Some(value) = bundled_text_resource(app, "edgar-identity") {
-        command.env("EDGAR_IDENTITY", value);
     }
     #[cfg(unix)]
     command.process_group(0);

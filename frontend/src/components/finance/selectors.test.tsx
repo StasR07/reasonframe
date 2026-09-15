@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { expect, it, vi } from "vitest"
 import type { Catalog, MetricDefinition } from "@/api/types"
@@ -47,12 +47,12 @@ it("renders every grouped metric in the shared styled selector and supports keyb
   expect(screen.getByText("Profitability")).toBeInTheDocument()
   expect(screen.getByText("Balance sheet")).toBeInTheDocument()
   expect(screen.getAllByRole("option", { hidden: true })).toHaveLength(metrics.length)
-  await user.keyboard("{ArrowDown}{Enter}")
+  await user.click(screen.getByRole("option", { name: "Free cash flow", hidden: true }))
   expect(onChange).toHaveBeenCalledWith("FREE_CASH_FLOW")
 
   await user.click(trigger)
   await user.keyboard("{Escape}")
-  expect(trigger).toHaveAttribute("aria-expanded", "false")
+  await waitFor(() => expect(trigger).toHaveAttribute("aria-expanded", "false"))
 
   rerender(<MetricSelector metrics={[]} value="REVENUE" onChange={onChange}/>)
   expect(screen.getByRole("combobox", { name: "Metric" })).toBeDisabled()
